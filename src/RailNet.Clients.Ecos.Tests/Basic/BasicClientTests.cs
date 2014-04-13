@@ -13,7 +13,7 @@ using RailNet.Clients.Ecos.Network;
 namespace RailNet.Clients.Ecos.Tests.Basic
 {
     [TestFixture]
-   public class BasicClientTests
+    public class BasicClientTests
     {
         private Mock<INachrichtenDispo> mock;
         private BasicClient client;
@@ -22,7 +22,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         public void SetUp()
         {
             mock = new Mock<INachrichtenDispo>();
-            
+
             client = new BasicClient(mock.Object);
         }
 
@@ -31,7 +31,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         [Test]
         public async void Q_QueryObjects_Simple()
         {
-           var result = await client.QueryObjects(10);
+            var result = await client.QueryObjects(10);
 
             mock.Verify(x => x.SendeBefehlAsync("queryObjects(10)"), Times.Once());
         }
@@ -39,10 +39,27 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         [Test]
         public async void Q_QueryObjects()
         {
-            var result = await client.QueryObjects(10, "size");
+            var result = await client.QueryObjects(10, "info");
+
+            mock.Verify(x => x.SendeBefehlAsync("queryObjects(10, info)"), Times.Once());
+        }
+
+        [Test]
+        public async void Q_QueryObjects_Size()
+        {
+            var result = await client.QueryObjectsSize(10);
 
             mock.Verify(x => x.SendeBefehlAsync("queryObjects(10, size)"), Times.Once());
         }
+
+        [Test]
+        public async void Q_QueryObjects_Range()
+        {
+            var result = await client.QueryObjects(10, 0, 2, "info");
+
+            mock.Verify(x => x.SendeBefehlAsync("queryObjects(10, info, nr[0,2])"), Times.Once());
+        }
+
 
         #endregion
 
@@ -56,7 +73,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public async void Q_Set_Value_Exception()
         {
             await client.Set(5, "1", "");
@@ -81,18 +98,33 @@ namespace RailNet.Clients.Ecos.Tests.Basic
             Assert.That(result.Content[1], Is.EqualTo("5 addr[3]"));
         }
 
+
+        [Test]
+        public async void Q_Set_Params()
+        {
+            const string query = "set(5, addr[3], name[\"Big Boy\"])";
+
+            var result = await client.Set(5, new Dictionary<string, string>()
+            {
+                {"addr", "3"},
+                {"name", "Big Boy"}
+            });
+
+            mock.Verify(x => x.SendeBefehlAsync(query), Times.Once());
+        }
+
         #endregion
 
         #region Get
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public async void Q_Get_Exception()
         {
             await client.Get(5);
         }
 
-       [Test]
+        [Test]
         public async void Q_Get()
         {
             const string query = "get(5, info)";
@@ -115,13 +147,6 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
         #region Create
 
-       [Test]
-       [ExpectedException(typeof(ArgumentNullException))]
-       public async void Q_Create_Param_Exception()
-       {
-           await client.Create(5, "");
-       }
-
         [Test]
         public async void Q_Create_Id()
         {
@@ -132,13 +157,12 @@ namespace RailNet.Clients.Ecos.Tests.Basic
             mock.Verify(x => x.SendeBefehlAsync(query));
         }
 
-
         [Test]
-        public async void Q_Create_Param()
+        public async void Q_Create_Id_Append()
         {
             const string query = "create(5, append)";
 
-            await client.Create(5, "append");
+            await client.Create(5, true);
 
             mock.Verify(x => x.SendeBefehlAsync(query));
         }
@@ -151,9 +175,23 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             await client.Create(5, new Dictionary<string, string>()
             {
-               {"name", "Big Boy"},
-               {"addr", "5"}
+                {"name", "Big Boy"},
+                {"addr", "5"}
             });
+
+            mock.Verify(x => x.SendeBefehlAsync(query));
+        }
+
+        [Test]
+        public async void Q_Create_Params_Append()
+        {
+            const string query = "create(5, name[\"Big Boy\"], addr[5], append)";
+
+            await client.Create(5, new Dictionary<string, string>()
+            {
+                {"name", "Big Boy"},
+                {"addr", "5"}
+            }, true);
 
             mock.Verify(x => x.SendeBefehlAsync(query));
         }
@@ -178,7 +216,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public async void Q_Request_Exception()
         {
             await client.Request(5, "");
