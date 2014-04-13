@@ -25,7 +25,7 @@ namespace RailNet.Clients.Ecos.Basic
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         private readonly INetworkClient _networkClient;
         
-        private bool strictFailureStrategy = true;
+        private bool _strictFailureStrategy = true;
         private DateTime _lastCheck;
 
         /// <summary>
@@ -42,6 +42,11 @@ namespace RailNet.Clients.Ecos.Basic
             _antworten = new ConcurrentDictionary<string, BasicAntwort>();
             _lastCheck = DateTime.Now;
             _networkClient.MessageReceivedEvent += Client_MessageReceivedEvent;
+        }
+
+        public NachrichtenDispo(INetworkClient networkClient, bool strictFailureStrategy) : this(networkClient)
+        {
+            _strictFailureStrategy = strictFailureStrategy;
         }
 
        private void Client_MessageReceivedEvent(object sender, MessageReceivedEventArgs e)
@@ -232,7 +237,7 @@ namespace RailNet.Clients.Ecos.Basic
         {
             logger.ErrorException(e.Message, e);
 
-            if (strictFailureStrategy)
+            if (_strictFailureStrategy)
                 throw e;
         }
     }

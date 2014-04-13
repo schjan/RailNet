@@ -11,7 +11,7 @@ using RailNet.Clients.Ecos.Network;
 namespace RailNet.Clients.Ecos.Tests.Basic
 {
     [TestFixture]
-  public  class NachrichtenDispoTests
+    public class NachrichtenDispoTests
     {
         private Mock<INetworkClient> mock;
         private NachrichtenDispo dispo;
@@ -37,7 +37,8 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         [Test]
         public async void TestDispoVerarbeiten()
         {
-            var dings = dispo.SendeBefehlAsync("queryObjects(10, name)");
+            const string befehl = "queryObjects(10, name)";
+            var dings = dispo.SendeBefehlAsync(befehl);
 
             mock.Raise(x => x.MessageReceivedEvent += null,
                 new MessageReceivedEventArgs(
@@ -50,7 +51,8 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             var result = await dings;
 
-            Assert.That(result.Befehl, Is.EqualTo("queryObjects(10, name)"));
+            mock.Verify(x => x.SendMessage(befehl), Times.Exactly(1));
+            Assert.That(result.Befehl, Is.EqualTo(befehl));
         }
     }
 }
