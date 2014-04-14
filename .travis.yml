@@ -11,5 +11,6 @@ before_install:
  - sudo installer -pkg "MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg" -target /
 
 script:
- - xbuild /src/RailNet.sln
+ - ls
+ - xbuild ./src/RailNet.sln
  - nunit-console ./src/RailNet.Clients.Ecos.Tests/bin/Debug/RailNet.Clients.Ecos.Tests.dll
