@@ -15,5 +15,6 @@ script:
  - xbuild /p:Configuration=Debug ./src/RailNet.sln
  - ls ./src/RailNet.Clients.Ecos.Tests/bin
  - ls ./src/RailNet.Clients.Ecos.Tests/bin/Debug
- - ./ci/nunit.sh ./src/RailNet.Clients.Ecos.Tests/bin/Debug/RailNet.Clients.Ecos.Tests.dll
+ - ls
+ - /ci/nunit.sh ./src/RailNet.Clients.Ecos.Tests/bin/Debug/RailNet.Clients.Ecos.Tests.dll
  #- clr net-4.0 nunit-console ./src/RailNet.Clients.Ecos.Tests/bin/${Configuration}/RailNet.Clients.Ecos.Tests.dll
