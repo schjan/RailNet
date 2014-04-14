@@ -12,5 +12,7 @@ before_install:
 
 script:
  - ls
- - xbuild ./src/RailNet.sln
+ - xbuild /p:Configuration=Debug ./src/RailNet.sln
+ - ls ./src/RailNet.Clients.Ecos.Tests/bin
+ - ls ./src/RailNet.Clients.Ecos.Tests/bin/Debug
  - nunit-console ./src/RailNet.Clients.Ecos.Tests/bin/Debug/RailNet.Clients.Ecos.Tests.dll
