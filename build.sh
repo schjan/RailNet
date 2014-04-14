@@ -1,8 +1,8 @@
 #!/bin/bash
 if [ ! -f tools/FAKE/tools/Fake.exe ]; then
-  mono --runtime=v4.0 src/.nuget/NuGet.exe install FAKE -OutputDirectory tools -ExcludeVersion
-  mono --runtime=v4.0 src/.nuget/NuGet.exe install FSharp.Formatting.CommandTool -OutputDirectory tools -ExcludeVersion -Prerelease 
-  mono --runtime=v4.0 src/.nuget/NuGet.exe install SourceLink.Fake -OutputDirectory tools -ExcludeVersion 
+  mono --runtime=v4.0 src/.nuget/NuGet.exe install FAKE -OutputDirectory packages -ExcludeVersion
+  mono --runtime=v4.0 src/.nuget/NuGet.exe install FSharp.Formatting.CommandTool -OutputDirectory packages -ExcludeVersion -Prerelease 
+  mono --runtime=v4.0 src/.nuget/NuGet.exe install SourceLink.Fake -OutputDirectory packages -ExcludeVersion 
 fi
 echo "LS"
 ls
@@ -14,4 +14,10 @@ echo "LS SRC"
 ls src
 echo "LS SRC/TOOLS"
 ls src/tools
+echo "LS packages"
+ls packages
+echo "LS packages/FAKE"
+ls packages/FAKE
+echo "LS packages/FAKE/tools"
+ls packages/FAKE/tools
 mono --runtime=v4.0 ./tools/FAKE/tools/FAKE.exe build.fsx $@
