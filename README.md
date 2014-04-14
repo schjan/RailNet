@@ -1,4 +1,4 @@
-RailNet [![Build status](https://ci.appveyor.com/api/projects/status/rny0qetlrrqbmvfo)](https://ci.appveyor.com/project/schjan/railnet)
+RailNet [![Build status](https://ci.appveyor.com/api/projects/status/rny0qetlrrqbmvfo)](https://ci.appveyor.com/project/schjan/railnet) [![Build Status](https://travis-ci.org/schjan/RailNet.svg?branch=master)](https://travis-ci.org/schjan/RailNet)
 =======
 
 Modellbahnsteuerungslibrary für ESU ECoS mit .NET 4.5 __async/await__
@@ -8,6 +8,8 @@ Die RailNet Library soll helfen Programme für die eigene Modellbahn zu schreibe
 Sobald der _RailClient_ teilweise implementiert ist, werde ich einige Beispiele und ein Beispielprojekt in C# veröffentlichen.
 
 Hilfe ist übrigens auch immer gerne gesehen! ;)
+
+Die Library ist [Mono](http://www.mono-project.com/Main_Page) kompaktibel und kann somit auch auf Linux eingesetzt werden!
 
 ##RailNet.Clients.Ecos
 Client für [ESU ECoS](http://www.esu.eu/produkte/digitale-steuerung/ecos-50200-zentrale/was-ecos-kann/)
