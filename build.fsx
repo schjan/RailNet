@@ -9,10 +9,10 @@ open Fake.AssemblyInfoFile
 RestorePackages()
 
 // Directories
-let buildDir  = @".\build\"
-let testDir   = @".\test\"
-let deployDir = @".\deploy\"
-let packagesDir = @".\packages"
+let buildDir  = @"./build/"
+let testDir   = @"./test/"
+let deployDir = @"./deploy/"
+let packagesDir = @"./packages"
 
 // version info
 let version = "0.2"  // or retrieve from CI server
@@ -41,19 +41,19 @@ Target "Clean" (fun _ ->
 //)
 
 Target "CompileLib" (fun _ ->
-    !! @"src\\**\*.csproj"
+    !! @"src//**/*.csproj"
       |> MSBuildRelease buildDir "Build"
       |> Log "LibBuild-Output: "
 )
 
 Target "CompileTest" (fun _ ->
-    !! @"src\RailNet.Clients.Ecos.Tests\*.csproj"
+    !! @"src/RailNet.Clients.Ecos.Tests/*.csproj"
       |> MSBuildRelease testDir "Build"
       |> Log "TestBuild-Output: "
 )
 
 Target "NUnitTest" (fun _ ->
-    !! (testDir + @"\*Tests.dll")
+    !! (testDir + @"/*Tests.dll")
       |> NUnit (fun p ->
                  {p with
                    DisableShadowCopy = true;
@@ -61,8 +61,8 @@ Target "NUnitTest" (fun _ ->
 )
 
 //Target "FxCop" (fun _ ->
-//    !+ (buildDir + @"\**\*.dll")
-//      ++ (buildDir + @"\**\*.exe")
+//    !+ (buildDir + @"/**/*.dll")
+//      ++ (buildDir + @"/**/*.exe")
 //        |> Scan
 //        |> FxCop (fun p ->
 //            {p with
@@ -71,7 +71,7 @@ Target "NUnitTest" (fun _ ->
 //)
 
 Target "Zip" (fun _ ->
-    !+ (buildDir + "\**\*.*")
+    !+ (buildDir + "/**/*.*")
         -- "*.zip"
         |> Scan
         |> Zip buildDir (deployDir + "RailNet." + version + ".zip")
