@@ -49,10 +49,11 @@
     <Compile Include="Basic\IBasicClient.cs" />
     <Compile Include="Basic\INachrichtenDispo.cs" />
     <Compile Include="Basic\NachrichtenDispo.cs" />
-    <Compile Include="Client.cs" />
+    <Compile Include="RailClient.cs" />
     <Compile Include="Network\INetworkClient.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TinyIoC.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

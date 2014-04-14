@@ -17,11 +17,11 @@ namespace RailNet.Clients.Ecos.Network
         private NetworkStream _tcpStream;
         private StreamReader _tcpReader;
         private StreamWriter _tcpWriter;
-        private readonly Thread _readerThread;
-        private readonly Thread _sendThread;
+        private Thread _readerThread;
+        private Thread _sendThread;
         private volatile bool _shouldStop = false;
         private readonly EventWaitHandle _newMessage = new ManualResetEvent(true);
-        private readonly ConcurrentBag<string> _messageList;
+        private volatile ConcurrentBag<string> _messageList;
 
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         
@@ -45,47 +45,20 @@ namespace RailNet.Clients.Ecos.Network
         public NetworkClient()
         {
             CreateTcpClient();
+        }
 
-            result = new List<string>();
-            _messageList = new ConcurrentBag<string>();
+        public void Disconnect()
+        {
+            _shouldStop = true;
+            _tcpReader.Close();
+            _tcpReader = null;
+            _tcpStream.Close();
+            _tcpStream = null;
+            _tcpWriter.Close();
+            _tcpWriter = null;
 
-            _readerThread = new Thread(async () =>
-            {
-                while (!_shouldStop)
-                {
-                    await ListenAsync();
-                }
-            });
-
-            _sendThread = new Thread(async () =>
-            {
-                while (!_shouldStop)
-                {
-                    //Warten
-                    _newMessage.WaitOne();
-
-                    //Return requested?
-                    if (_shouldStop)
-                        return;
-                    
-                    //Versende Messages
-                    string message;
-                    if (_messageList.TryTake(out message))
-                    {
-                        await WriteAsync(message);
-                        await Task.Delay(_messageDelay);
-                    }
-                    else
-                    {
-                        lock (_newMessage)
-                        {
-                            if (_newMessage.WaitOne(1) == false)
-                                _newMessage.Reset();
-                        }
-                        
-                    }
-                }
-            });
+            _tcpClient.Close();
+            _tcpClient = null;
         }
 
         /// <summary>
@@ -125,6 +98,7 @@ namespace RailNet.Clients.Ecos.Network
             }
             catch (SocketException ex)
             {
+                logger.ErrorException("Could not connect to " + host + ":" + port, ex);
                 return ex.SocketErrorCode;
             }
 
@@ -135,6 +109,8 @@ namespace RailNet.Clients.Ecos.Network
 
             _readerThread.Start();
             _sendThread.Start();
+
+            logger.Debug("Connected to {0}:{1}", host, port);
 
             return SocketError.Success;
         }
@@ -184,6 +160,47 @@ namespace RailNet.Clients.Ecos.Network
         private void CreateTcpClient()
         {
             _tcpClient = new TcpClient(AddressFamily.InterNetwork);
+
+            result = new List<string>();
+            _messageList = new ConcurrentBag<string>();
+
+            _readerThread = new Thread(async () =>
+            {
+                while (!_shouldStop)
+                {
+                    await ListenAsync();
+                }
+            });
+
+            _sendThread = new Thread(async () =>
+            {
+                while (!_shouldStop)
+                {
+                    //Warten
+                    _newMessage.WaitOne();
+
+                    //Return requested?
+                    if (_shouldStop)
+                        return;
+
+                    //Versende Messages
+                    string message;
+                    if (_messageList.TryTake(out message))
+                    {
+                        await WriteAsync(message);
+                        await Task.Delay(_messageDelay);
+                    }
+                    else
+                    {
+                        lock (_newMessage)
+                        {
+                            if (_newMessage.WaitOne(1) == false)
+                                _newMessage.Reset();
+                        }
+
+                    }
+                }
+            });
         }
 
         ~NetworkClient()

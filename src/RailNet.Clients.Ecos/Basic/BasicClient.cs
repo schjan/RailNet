@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TinyIoC;
 
 namespace RailNet.Clients.Ecos.Basic
 {
@@ -13,6 +14,11 @@ namespace RailNet.Clients.Ecos.Basic
         public BasicClient(INachrichtenDispo dispo)
         {
             _dispo = dispo;
+        }
+
+        public BasicClient()
+        {
+            _dispo = TinyIoCContainer.Current.Resolve<INachrichtenDispo>();
         }
 
         /// <summary>
