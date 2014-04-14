@@ -2,7 +2,7 @@ language: objective-c
 
 env:
  global:
- # - EnableNuGetPackageRestore=true
+  - EnableNuGetPackageRestore=false
   - Configuration="Debug"
  matrix:
   - MONO_VER="3.4.0"
