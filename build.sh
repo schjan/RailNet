@@ -8,4 +8,4 @@ echo "LS packages"
 ls packages
 echo "LS packages/tools"
 ls packages/tools
-mono --runtime=v4.0 .packages/tools/FAKE/tools/FAKE.exe build.fsx $@
+mono --runtime=v4.0 packages/tools/FAKE/tools/FAKE.exe build.fsx $@
