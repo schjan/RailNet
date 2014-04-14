@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using RailNet.Clients.Ecos.Network;
+using TinyIoC;
 
 namespace RailNet.Clients.Ecos.Basic
 {
@@ -29,10 +30,12 @@ namespace RailNet.Clients.Ecos.Basic
         private DateTime _lastCheck;
 
         /// <summary>
-        /// Default constructor
+        /// Default constructor gets the INetworkClient from IoC
         /// </summary>
-        public NachrichtenDispo() : this(new NetworkClient())
+        public NachrichtenDispo()
+            : this(TinyIoCContainer.Current.Resolve<INetworkClient>())
         {
+            
         }
 
         public NachrichtenDispo(INetworkClient networkClient)

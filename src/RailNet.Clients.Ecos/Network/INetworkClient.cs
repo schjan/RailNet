@@ -37,6 +37,8 @@ namespace RailNet.Clients.Ecos.Network
         /// <param name="text">Message</param>
         void SendMessage(string text);
 
+        void Disconnect();
+
         /// <summary>
         /// Sends a Message directly to Server without MQ.
         /// </summary>
