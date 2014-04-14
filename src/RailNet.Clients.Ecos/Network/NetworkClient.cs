@@ -50,15 +50,27 @@ namespace RailNet.Clients.Ecos.Network
         public void Disconnect()
         {
             _shouldStop = true;
-            _tcpReader.Close();
-            _tcpReader = null;
-            _tcpStream.Close();
-            _tcpStream = null;
-            _tcpWriter.Close();
-            _tcpWriter = null;
 
-            _tcpClient.Close();
-            _tcpClient = null;
+            if (_tcpReader != null)
+            {
+                _tcpReader.Close();
+                _tcpReader = null;
+            }
+            if (_tcpStream != null)
+            {
+                _tcpStream.Close();
+                _tcpStream = null;
+            }
+            if (_tcpWriter != null)
+            {
+                _tcpWriter.Close();
+                _tcpWriter = null;
+            }
+            if (_tcpClient != null)
+            {
+                _tcpClient.Close();
+                _tcpClient = null;
+            }
         }
 
         /// <summary>
@@ -159,6 +171,7 @@ namespace RailNet.Clients.Ecos.Network
 
         private void CreateTcpClient()
         {
+            _shouldStop = false;
             _tcpClient = new TcpClient(AddressFamily.InterNetwork);
 
             result = new List<string>();
@@ -168,7 +181,14 @@ namespace RailNet.Clients.Ecos.Network
             {
                 while (!_shouldStop)
                 {
-                    await ListenAsync();
+                    try
+                    {
+                        await ListenAsync();
+                    }
+                    catch (Exception)
+                    {
+
+                    }
                 }
             });
 
@@ -205,17 +225,7 @@ namespace RailNet.Clients.Ecos.Network
 
         ~NetworkClient()
         {
-            _shouldStop = true;
-
-            _tcpReader.Close();
-            _tcpReader = null;
-            _tcpStream.Close();
-            _tcpStream = null;
-            _tcpWriter.Close();
-            _tcpWriter = null;
-
-            _tcpClient.Close();
-            _tcpClient = null;
+            Disconnect();
         }
 
         /// <summary>
