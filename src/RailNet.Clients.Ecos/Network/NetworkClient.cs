@@ -20,7 +20,7 @@ namespace RailNet.Clients.Ecos.Network
         private Thread _readerThread;
         private Thread _sendThread;
         private volatile bool _shouldStop = false;
-        private readonly EventWaitHandle _newMessage = new ManualResetEvent(true);
+        //private readonly EventWaitHandle _newMessage = new ManualResetEvent(true);
         private volatile ConcurrentBag<string> _messageList;
 
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
@@ -153,7 +153,6 @@ namespace RailNet.Clients.Ecos.Network
         public void SendMessage(string text)
         {
             _messageList.Add(text);
-            _newMessage.Set();
         }
 
         /// <summary>
@@ -196,12 +195,16 @@ namespace RailNet.Clients.Ecos.Network
             {
                 while (!_shouldStop)
                 {
-                    //Warten
-                    _newMessage.WaitOne();
-
                     //Return requested?
                     if (_shouldStop)
                         return;
+
+                    //Warten
+                    if (_messageList.Count == 0)
+                    {
+                        await Task.Delay(100);
+                        continue;
+                    }
 
                     //Versende Messages
                     string message;
@@ -212,12 +215,7 @@ namespace RailNet.Clients.Ecos.Network
                     }
                     else
                     {
-                        lock (_newMessage)
-                        {
-                            if (_newMessage.WaitOne(1) == false)
-                                _newMessage.Reset();
-                        }
-
+                        logger.Error("Konnte keine Nachricht zum Versenden aus ConcurrentBag holen!");
                     }
                 }
             });

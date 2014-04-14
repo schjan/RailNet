@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NLog;
 using RailNet.Clients.Ecos;
 
 namespace RailNet.Signalsteuerung.WF
@@ -25,7 +26,7 @@ namespace RailNet.Signalsteuerung.WF
             rc = new RailClient();
         }
 
-        private void RadioClick(object sender, EventArgs e)
+        private async void RadioClick(object sender, EventArgs e)
         {
             var btn = sender as RadioButton;
 
@@ -38,7 +39,7 @@ namespace RailNet.Signalsteuerung.WF
             bool red = tag[1] == "R";
 
             if (rc.Connected)
-                rc.BasicClient.Set(11, "switch", "DCC" + addr + (red ? "r" : "g"));
+                await rc.BasicClient.Set(11, "switch", "DCC" + addr + (red ? "r" : "g"));
         }
 
         private async void btnConnect_Click(object sender, EventArgs e)
