@@ -44,6 +44,7 @@
             this.numAddr = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.tbLog = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numAddr)).BeginInit();
             this.SuspendLayout();
             // 
@@ -224,11 +225,21 @@
             this.richTextBox1.TabIndex = 14;
             this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
+            // tbLog
+            // 
+            this.tbLog.Location = new System.Drawing.Point(15, 241);
+            this.tbLog.Name = "tbLog";
+            this.tbLog.ReadOnly = true;
+            this.tbLog.Size = new System.Drawing.Size(327, 158);
+            this.tbLog.TabIndex = 15;
+            this.tbLog.Text = "";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(354, 261);
+            this.ClientSize = new System.Drawing.Size(354, 411);
+            this.Controls.Add(this.tbLog);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.numAddr);
@@ -244,7 +255,7 @@
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtHostname);
-            this.MaximumSize = new System.Drawing.Size(370, 300);
+            this.MaximumSize = new System.Drawing.Size(370, 450);
             this.MinimumSize = new System.Drawing.Size(370, 300);
             this.Name = "Form1";
             this.Text = "Signalsteuerung";
@@ -272,6 +283,7 @@
         private System.Windows.Forms.NumericUpDown numAddr;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox tbLog;
     }
 }
 

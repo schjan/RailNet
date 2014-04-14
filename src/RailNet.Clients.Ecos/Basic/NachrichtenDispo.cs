@@ -126,7 +126,9 @@ namespace RailNet.Clients.Ecos.Basic
             if (!signal)
             {
                 _currentQuerys.Remove(befehl);
-                _antworten.Add(befehl, new BasicAntwort(null, befehl, 500, "Timeout!"));
+                if (!_antworten.ContainsKey(befehl))
+                    _antworten.Add(befehl, new BasicAntwort(null, befehl, 500, "Timeout!"));
+                logger.Error("Timeout for {0}", befehl);
             }
         }
 
