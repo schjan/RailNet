@@ -15,7 +15,7 @@ let deployDir = @"./deploy/"
 let packagesDir = @"./packages"
 
 // version info
-let version = "0.2"  // or retrieve from CI server
+let version = "0.0"  // or retrieve from CI server
 
 // Targets
 Target "Clean" (fun _ ->
@@ -47,7 +47,7 @@ Target "CompileLib" (fun _ ->
 )
 
 Target "CompileTest" (fun _ ->
-    !! @"src/RailNet.Clients.Ecos.Tests/*.csproj"
+    !! @"src/*.Tests/*.csproj"
       |> MSBuildRelease testDir "Build"
       |> Log "TestBuild-Output: "
 )
