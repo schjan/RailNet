@@ -30,6 +30,8 @@ namespace RailNet.Clients.Ecos
             }
         }
 
+        public IBasicClient BasicClient {get { return container.Resolve<IBasicClient>(); }}
+
         public async Task<bool> ConnectAsync(string host, int port = 15471)
         {
             var result = await networkClient.ConnectAsync(host, port);
