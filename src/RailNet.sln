@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Core", "RailNet.Cor
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{72B5F6A9-405F-465F-9428-B1D3EDE51CAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Core.Tests", "RailNet.Core.Tests\RailNet.Core.Tests.csproj", "{3DEABBFB-0FB1-471D-ACB7-2038C29F2431}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Core.Tests", "Tests\RailNet.Core.Tests\RailNet.Core.Tests.csproj", "{3DEABBFB-0FB1-471D-ACB7-2038C29F2431}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Clients.Ecos.Tests", "RailNet.Clients.Ecos.Tests\RailNet.Clients.Ecos.Tests.csproj", "{D1EF21E1-A3F5-4C72-B968-04FA606EE651}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Clients.Ecos.Tests", "Tests\RailNet.Clients.Ecos.Tests\RailNet.Clients.Ecos.Tests.csproj", "{D1EF21E1-A3F5-4C72-B968-04FA606EE651}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C161A543-43A1-44BF-8533-4F613D3F0D0C}"
 	ProjectSection(SolutionItems) = preProject

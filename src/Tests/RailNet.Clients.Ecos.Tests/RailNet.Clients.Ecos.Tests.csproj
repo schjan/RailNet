@@ -68,11 +68,11 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\RailNet.Clients.Ecos\RailNet.Clients.Ecos.csproj">
+    <ProjectReference Include="..\..\RailNet.Clients.Ecos\RailNet.Clients.Ecos.csproj">
       <Project>{ac3b737d-e0ad-4e37-bf8e-e8d42623a9d3}</Project>
       <Name>RailNet.Clients.Ecos</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RailNet.Core\RailNet.Core.csproj">
+    <ProjectReference Include="..\..\RailNet.Core\RailNet.Core.csproj">
       <Project>{cba9fc0e-38be-4166-8b92-710f58509586}</Project>
       <Name>RailNet.Core</Name>
     </ProjectReference>

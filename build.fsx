@@ -12,6 +12,7 @@ RestorePackages()
 let buildDir  = @"./build/"
 let testDir   = @"./test/"
 let deployDir = @"./deploy/"
+let sampleDir = @"./sample/"
 let packagesDir = @"./packages"
 
 // version info
@@ -47,14 +48,14 @@ Target "CompileLib" (fun _ ->
 )
 
 Target "CompileTest" (fun _ ->
-    !! @"src/*.Tests/*.csproj"
+    !! @"src/Tests/**/*.csproj"
       |> MSBuildRelease testDir "Build"
       |> Log "TestBuild-Output: "
 )
 
-Target "CompileSamples" (fun _ ->
+Target "CompileSample" (fun _ ->
     !! @"src/Samples/**/*.csproj"
-      |> MSBuildRelease buildDir "Build"
+      |> MSBuildRelease sampleDir "Build"
       |> Log "SamplesBuild-Output: "
 )
 
@@ -88,6 +89,7 @@ Target "Zip" (fun _ ->
  // ==> "SetVersions"
   ==> "CompileLib"
   ==> "CompileTest"
+  =?> ("CompileSample", not isLinux) 
 //  ==> "FxCop"
   ==> "NUnitTest"
   ==> "Zip"
