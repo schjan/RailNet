@@ -41,7 +41,7 @@ Target "Clean" (fun _ ->
 //)
 
 Target "CompileLib" (fun _ ->
-    !! @"src//**/*.csproj"
+    !! @"src/RailNet*/*.csproj"
       |> MSBuildRelease buildDir "Build"
       |> Log "LibBuild-Output: "
 )
@@ -50,6 +50,12 @@ Target "CompileTest" (fun _ ->
     !! @"src/*.Tests/*.csproj"
       |> MSBuildRelease testDir "Build"
       |> Log "TestBuild-Output: "
+)
+
+Target "CompileSamples" (fun _ ->
+    !! @"src/Samples/**/*.csproj"
+      |> MSBuildRelease buildDir "Build"
+      |> Log "SamplesBuild-Output: "
 )
 
 Target "NUnitTest" (fun _ ->
