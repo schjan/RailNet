@@ -20,14 +20,13 @@ namespace RailNet.Clients.Ecos.Network
         private Thread _readerThread;
         private Thread _sendThread;
         private volatile bool _shouldStop = false;
-        //private readonly EventWaitHandle _newMessage = new ManualResetEvent(true);
         private volatile ConcurrentBag<string> _messageList;
 
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         
-        private int _messageDelay = 200;
+        private int _messageDelay = 100;
         /// <summary>
-        /// Delay in ms between to messages (200 is default)
+        /// Delay in ms between to messages (100 is default)
         /// </summary>
         public int MessageDelay
         {
@@ -132,8 +131,6 @@ namespace RailNet.Clients.Ecos.Network
         private async Task ListenAsync()
         {
             var message = await _tcpReader.ReadLineAsync();
-
-            logger.Trace(message);
             
             result.Add(message);
             if (message.StartsWith("<END"))
