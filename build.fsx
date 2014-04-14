@@ -72,7 +72,7 @@ Target "Zip" (fun _ ->
     !+ (buildDir + "\**\*.*")
         -- "*.zip"
         |> Scan
-        |> Zip buildDir (deployDir + "Calculator." + version + ".zip")
+        |> Zip buildDir (deployDir + "RailNet." + version + ".zip")
 )
 
 // Dependencies
