@@ -12,12 +12,7 @@ before_install:
  - sudo installer -pkg "MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg" -target /
 
 before_script:
- - chmod +x ci/nunit.sh
+ - chmod +x build.sh
  
 script:
- - xbuild /p:Configuration=Debug ./src/RailNet.sln
- - ls ./src/RailNet.Clients.Ecos.Tests/bin
- - ls ./src/RailNet.Clients.Ecos.Tests/bin/Debug
- - ls
- - ./ci/nunit.sh ./src/RailNet.Clients.Ecos.Tests/bin/Debug/RailNet.Clients.Ecos.Tests.dll
- #- clr net-4.0 nunit-console ./src/RailNet.Clients.Ecos.Tests/bin/${Configuration}/RailNet.Clients.Ecos.Tests.dll
+ - ./build.sh
