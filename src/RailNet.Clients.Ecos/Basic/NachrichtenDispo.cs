@@ -24,17 +24,12 @@ namespace RailNet.Clients.Ecos.Basic
     /// </summary>
     public class NachrichtenDispo : INachrichtenDispo
     {
-        private readonly IDictionary<string, EventWaitHandle> _currentQuerys;
-        private readonly IDictionary<string, BasicResponse> _antworten;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         private readonly INetworkClient _networkClient;
 
-        private IObservable<BasicResponse> incomingMessages;
+        private readonly IObservable<BasicResponse> incomingMessages;
         // TODO: incomingEvents
         //private IObservable<BasicEvent> incomingEvents; 
-        
-        private bool _strictFailureStrategy = true;
-        private DateTime _lastCheck;
 
         /// <summary>
         /// Default constructor gets the INetworkClient from IoC
@@ -42,7 +37,7 @@ namespace RailNet.Clients.Ecos.Basic
         public NachrichtenDispo()
             : this(TinyIoCContainer.Current.Resolve<INetworkClient>())
         {
-            
+
         }
 
         public NachrichtenDispo(INetworkClient networkClient)
@@ -59,16 +54,11 @@ namespace RailNet.Clients.Ecos.Basic
                 .Select(ParseResponse);
         }
 
-        public NachrichtenDispo(INetworkClient networkClient, bool strictFailureStrategy) : this(networkClient)
-        {
-            _strictFailureStrategy = strictFailureStrategy;
-        }
-
        /// <summary>
        /// Von ausserhalb Aufgerufene Methode zum senden einer Nachricht.
-       /// Sendet eine Nachricht und awaited die Antwort zu der Nachricht.
+       /// Sendet eine Nachricht und liefert die Antwort der Nachricht asynchron.
        /// </summary>
-       /// <param name="befehl"></param>
+       /// <param name="command"></param>
        /// <returns></returns>
         public Task<BasicResponse> SendCommandAsync(string command)
         {
@@ -88,7 +78,11 @@ namespace RailNet.Clients.Ecos.Basic
 
         private BasicResponse ParseResponse(string[] message)
         {
-            return new BasicResponse(message);
+            var response = new BasicResponse(message);
+            
+            response.ExtractError();
+
+            return response;
         }
 
         // TODO: Mehr Validation noetig?
@@ -100,8 +94,7 @@ namespace RailNet.Clients.Ecos.Basic
         private bool HasBeginAndEnd(string[] message)
         {
             bool isValid = true;
-
-
+            
             if (!message[0].StartsWith("<") || !message[0].EndsWith(">"))
                 isValid = false;
 
@@ -123,34 +116,6 @@ namespace RailNet.Clients.Ecos.Basic
                 return MessageType.Event;
 
             return MessageType.Undefined;
-        }
-
-        private void ExtractError(ref BasicResponse a)
-        {
-            string footer = a.Content.Last();
-
-            if (!footer.StartsWith("<END "))
-                throw new Exception("This is not the End");
-
-            footer = footer.Substring(5, footer.Length - 6);
-
-            var result = footer.Split(' ');
-
-            a.ErrorNumber = int.Parse(result[0]);
-            a.Error = result[1].Trim('(', ')');
-        }
-
-        private void ThrowException(Exception e)
-        {
-            ThrowException(e.Message, e);
-        }
-
-        private void ThrowException(string message, Exception e)
-        {
-            logger.ErrorException(e.Message, e);
-
-            if (_strictFailureStrategy)
-                throw e;
         }
     }
 

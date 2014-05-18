@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 
 namespace RailNet.Clients.Ecos.Basic
 {
@@ -39,6 +41,21 @@ namespace RailNet.Clients.Ecos.Basic
         private static string GetCommandByContent(string[] content)
         {
             return content[0].Substring(7, content[0].Length - 8);
+        }
+
+        internal void ExtractError()
+        {
+            string footer = Content.Last();
+
+            if (!footer.StartsWith("<END "))
+                throw new InvalidDataException("No valid End found.");
+
+            footer = footer.Substring(5, footer.Length - 6);
+
+            var result = footer.Split(' ');
+
+            ErrorNumber = int.Parse(result[0]);
+            Error = result[1].Trim('(', ')');
         }
     }
 }

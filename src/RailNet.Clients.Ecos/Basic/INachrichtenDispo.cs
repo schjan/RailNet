@@ -12,7 +12,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// Von ausserhalb Aufgerufene Methode zum senden einer Nachricht.
         /// Sendet eine Nachricht und erwartet die Antwort zu der Nachricht.
         /// </summary>
-        /// <param name="befehl"></param>
+        /// <param name="command"></param>
         /// <returns></returns>
         Task<BasicResponse> SendCommandAsync(string command);
     }
