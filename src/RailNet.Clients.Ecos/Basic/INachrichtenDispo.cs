@@ -14,6 +14,6 @@ namespace RailNet.Clients.Ecos.Basic
         /// </summary>
         /// <param name="befehl"></param>
         /// <returns></returns>
-        Task<BasicAntwort> SendeBefehlAsync(string befehl);
+        Task<BasicResponse> SendCommandAsync(string command);
     }
 }

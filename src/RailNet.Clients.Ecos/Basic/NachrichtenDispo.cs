@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,9 +25,13 @@ namespace RailNet.Clients.Ecos.Basic
     public class NachrichtenDispo : INachrichtenDispo
     {
         private readonly IDictionary<string, EventWaitHandle> _currentQuerys;
-        private readonly IDictionary<string, BasicAntwort> _antworten;
+        private readonly IDictionary<string, BasicResponse> _antworten;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         private readonly INetworkClient _networkClient;
+
+        private IObservable<BasicResponse> incomingMessages;
+        // TODO: incomingEvents
+        //private IObservable<BasicEvent> incomingEvents; 
         
         private bool _strictFailureStrategy = true;
         private DateTime _lastCheck;
@@ -41,10 +48,15 @@ namespace RailNet.Clients.Ecos.Basic
         public NachrichtenDispo(INetworkClient networkClient)
         {
             _networkClient = networkClient;
-            _currentQuerys = new ConcurrentDictionary<string, EventWaitHandle>();
-            _antworten = new ConcurrentDictionary<string, BasicAntwort>();
-            _lastCheck = DateTime.Now;
-            _networkClient.MessageReceivedEvent += Client_MessageReceivedEvent;
+
+            // Rx :)
+            incomingMessages = Observable.FromEventPattern<MessageReceivedEventHandler, MessageReceivedEventArgs>(
+                h => _networkClient.MessageReceivedEvent += h,
+                h => _networkClient.MessageReceivedEvent -= h)
+                .Select(x => x.EventArgs.Content)
+                .Where(ValidateMessage)
+                .Where(x => GetMessageType(x) == MessageType.Reply)
+                .Select(ParseResponse);
         }
 
         public NachrichtenDispo(INetworkClient networkClient, bool strictFailureStrategy) : this(networkClient)
@@ -52,151 +64,34 @@ namespace RailNet.Clients.Ecos.Basic
             _strictFailureStrategy = strictFailureStrategy;
         }
 
-       private void Client_MessageReceivedEvent(object sender, MessageReceivedEventArgs e)
-        {
-            VerarbeiteMessage(e.Content);
-        }
-
-       #region Public
-
        /// <summary>
        /// Von ausserhalb Aufgerufene Methode zum senden einer Nachricht.
        /// Sendet eine Nachricht und awaited die Antwort zu der Nachricht.
        /// </summary>
        /// <param name="befehl"></param>
        /// <returns></returns>
-       public async Task<BasicAntwort> SendeBefehlAsync(string befehl)
-       {
-           await SendeBefehlAwaitResponse(befehl);
-
-           return FindAnswer(befehl);
-       }
-
-       /// <summary>
-       /// Findet die Serverantwort zum eingegebenen Befehl.
-       /// Wenn keine Antwort gefunden wurde, wird eine Error Antwort mit Error 404 ausgegeben.
-       /// </summary>
-       /// <param name="befehl"></param>
-       /// <returns></returns>
-       private BasicAntwort FindAnswer(string befehl)
-       {
-           lock (_antworten)
-           {
-               if (!_antworten.ContainsKey(befehl))
-                   return new BasicAntwort { Error = "Antwort nicht gefunden!", ErrorNumber = 404 };
-
-               BasicAntwort a = _antworten.First(x => x.Key == befehl).Value;
-               if (a.Content == null)
-                   return a;
-
-               ExtractError(ref a);
-
-               Console.WriteLine("Antwort auf " + a.Befehl);
-
-               return a;
-           }
-       }
-
-        /// <summary>
-        /// Sendet den angegebenen Befehl an den Server und wartet, bis der Server auf den Befehl antwortet.
-        /// Wird das Timeout überschritten wird eine Antwort mit "Timeout" generiert.
-        /// </summary>
-        /// <param name="befehl"></param>
-        /// <returns></returns>
-        private async Task SendeBefehlAwaitResponse(string befehl)
+        public Task<BasicResponse> SendCommandAsync(string command)
         {
             if (!_networkClient.Connected)
                 throw new IOException("Client nicht verbunden!");
 
-            var e = new EventWaitHandle(false, EventResetMode.ManualReset);
-            var signal = false;
+            var result = incomingMessages
+                .Where(reply => reply.Command == command)
+                .Timeout(TimeSpan.FromSeconds(2))
+                .Take(1)
+                .ToTask();
 
+            _networkClient.SendMessage(command);
 
-            if (_currentQuerys.ContainsKey(befehl))
-                e = _currentQuerys.First(x => x.Key == befehl).Value;
-            else
-                _currentQuerys.Add(befehl, e);
-
-            _networkClient.SendMessage(befehl);
-
-            await Task.Run(() => signal = e.WaitOne(8000));
-
-            e = null;
-
-            if (!signal)
-            {
-                _currentQuerys.Remove(befehl);
-                if (!_antworten.ContainsKey(befehl))
-                    _antworten.Add(befehl, new BasicAntwort(null, befehl, 500, "Timeout!"));
-                logger.Error("Timeout for {0}", befehl);
-            }
+            return result;
         }
 
-        #endregion
-
-       #region Message Verarbeiten
-
-       private void VerarbeiteMessage(string[] message)
+        private BasicResponse ParseResponse(string[] message)
         {
-            logger.Trace("Verarbeite {0}", message[0]);
-
-            if (!HasBeginAndEnd(message))
-            {
-                ThrowException(
-                    new InvalidDataException("Message konnte nicht verarbeitet werden und passt nicht in das Message Schema!\r\n"
-                                             + message[0]));
-            }
-
-            if (message[0].StartsWith("<REPLY "))
-            {
-                string header = message[0].Substring(7, message[0].Length - 8);
-
-                _antworten.Remove(header);
-                _antworten.Add(header, new BasicAntwort(message, header));
-
-                if (_currentQuerys.All(x => x.Key != header))
-                    return;
-
-                var query = _currentQuerys.First(x => x.Key == header);
-                query.Value.Set(); // Can GC collect WaitHandles with this code?
-                _currentQuerys.Remove(query);
-            }
-            else if (message[0].StartsWith("<EVENT "))
-            {
-            }
-            else
-            {
-                ThrowException(new InvalidDataException("Unbekannter Nachrichtentyp!",
-                    new Exception("Data: " + message[0])));
-            }
-
-            if(_lastCheck < DateTime.Now.AddSeconds(-10))
-                ClearAntwortenCache();
+            return new BasicResponse(message);
         }
 
-        private void ClearAntwortenCache()
-        {
-            lock (_antworten)
-            {
-                string[] keys = _antworten.Keys.ToArray();
-
-                foreach (var key in keys)
-                {
-                    BasicAntwort a;
-
-                    if (_antworten.TryGetValue(key, out a))
-                    {
-                        if (a.Timestamp.Second < DateTime.Now.Second - 10)
-                            _antworten.Remove(key);
-                    }
-                }
-
-                _lastCheck = DateTime.Now;
-                logger.Debug(() => "Cleared cache");
-            }
-        }
-
-        // Mehr Validation noetig?
+        // TODO: Mehr Validation noetig?
         private bool ValidateMessage(string[] message)
         {
             return HasBeginAndEnd(message);
@@ -216,7 +111,21 @@ namespace RailNet.Clients.Ecos.Basic
             return isValid;
         }
 
-        private void ExtractError(ref BasicAntwort a)
+        private MessageType GetMessageType(string[] message)
+        {
+            if (message.Length < 3)
+                return MessageType.Undefined;
+
+            if (message[0].StartsWith("<REPLY "))
+                return MessageType.Reply;
+
+            if (message[0].StartsWith("<EVENT "))
+                return MessageType.Event;
+
+            return MessageType.Undefined;
+        }
+
+        private void ExtractError(ref BasicResponse a)
         {
             string footer = a.Content.Last();
 
@@ -231,8 +140,6 @@ namespace RailNet.Clients.Ecos.Basic
             a.Error = result[1].Trim('(', ')');
         }
 
-        #endregion
-
         private void ThrowException(Exception e)
         {
             ThrowException(e.Message, e);
@@ -245,5 +152,12 @@ namespace RailNet.Clients.Ecos.Basic
             if (_strictFailureStrategy)
                 throw e;
         }
+    }
+
+    internal enum MessageType
+    {
+        Undefined = 0,
+        Reply,
+        Event
     }
 }

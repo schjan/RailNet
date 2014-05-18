@@ -29,7 +29,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// <param name="max">Range bis</param>
         /// <param name="args">Parameter</param>
         /// <returns></returns>
-        public async Task<BasicAntwort> QueryObjects(int id, int min = 0, int max = 0, params string[] args)
+        public Task<BasicResponse> QueryObjects(int id, int min = 0, int max = 0, params string[] args)
         {
             var b = new StringBuilder("queryObjects(");
             b.Append(id);
@@ -46,7 +46,7 @@ namespace RailNet.Clients.Ecos.Basic
 
             b.Append(')');
 
-            return await _dispo.SendeBefehlAsync(b.ToString());
+            return _dispo.SendCommandAsync(b.ToString());
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// </summary>
         /// <param name="id">ID des Objektes</param>
         /// <param name="args">Parameter</param>
-        public async Task<BasicAntwort> QueryObjects(int id, params string[] args)
+        public async Task<BasicResponse> QueryObjects(int id, params string[] args)
         {
             return await QueryObjects(id, 0, 0, args);
         }
@@ -63,9 +63,9 @@ namespace RailNet.Clients.Ecos.Basic
         /// Liefert die groesse der Liste der zu der ID gehoerigen Objekte.
         /// </summary>
         /// <param name="id">ID des Objektes</param>
-        public async Task<BasicAntwort> QueryObjectsSize(int id)
+        public Task<BasicResponse> QueryObjectsSize(int id)
         {
-            return await _dispo.SendeBefehlAsync("queryObjects(" + id + ", size)");
+            return _dispo.SendCommandAsync("queryObjects(" + id + ", size)");
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// </summary>
         /// <param name="id">ID des Objektes</param>
         /// <param name="args">Dictionary mit jeweils Parameter und Wert</param>
-        public async Task<BasicAntwort> Set(int id, Dictionary<string, string> args)
+        public async Task<BasicResponse> Set(int id, Dictionary<string, string> args)
         {
             if (args.Count == 0)
                 throw new ArgumentNullException("args", "args duerfen nicht leer sein!");
@@ -90,12 +90,12 @@ namespace RailNet.Clients.Ecos.Basic
                 str.Append(arg.Key);
                 str.Append('[');
                 str.Append(arg.Key == "name" ? string.Format("\"{0}\"", arg.Value) : arg.Value);
-                ;
+
                 str.Append(']');
             }
             str.Append(')');
 
-            return await _dispo.SendeBefehlAsync(str.ToString());
+            return await _dispo.SendCommandAsync(str.ToString());
         }
 
         /// <summary>
@@ -104,9 +104,9 @@ namespace RailNet.Clients.Ecos.Basic
         /// <param name="id">ID des Objektes</param>
         /// <param name="param">Parameter</param>
         /// <param name="value">Wert</param>
-        public async Task<BasicAntwort> Set(int id, string param, string value)
+        public Task<BasicResponse> Set(int id, string param, string value)
         {
-            return await Set(id, new Dictionary<string, string>() {{param, value}});
+            return Set(id, new Dictionary<string, string>() {{param, value}});
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// </summary>
         /// <param name="id">ID des Objektes</param>
         /// <param name="args">Eigenschaften</param>
-        public async Task<BasicAntwort> Get(int id, params string[] args)
+        public Task<BasicResponse> Get(int id, params string[] args)
         {
             if (args.Length == 0)
                 throw new ArgumentNullException("args", "args duerfen nicht leer sein!");
@@ -128,7 +128,7 @@ namespace RailNet.Clients.Ecos.Basic
             }
             b.Append(')');
 
-            return await _dispo.SendeBefehlAsync(b.ToString());
+            return _dispo.SendCommandAsync(b.ToString());
         }
 
         /// <summary>
@@ -136,9 +136,9 @@ namespace RailNet.Clients.Ecos.Basic
         /// </summary>
         /// <param name="id">ID des Objektmanagers</param>
         /// <param name="append">Gibt an ob Append-Befehl hinzugefuegt werden soll.</param>
-        public async Task<BasicAntwort> Create(int id, bool append = false)
+        public Task<BasicResponse> Create(int id, bool append = false)
         {
-            return await Create(id, null, append);
+            return Create(id, null, append);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// <param name="id">ID des Objektmanagers</param>
         /// <param name="args">Argumente wie bei Set</param>
         /// <param name="append">Gibt an ob Append-Befehl hinzugefuegt werden soll.</param>
-        public async Task<BasicAntwort> Create(int id, Dictionary<string, string> args, bool append = false)
+        public Task<BasicResponse> Create(int id, Dictionary<string, string> args, bool append = false)
         {
             var b = new StringBuilder("create(");
             b.Append(id);
@@ -171,16 +171,16 @@ namespace RailNet.Clients.Ecos.Basic
 
             b.Append(')');
 
-            return await _dispo.SendeBefehlAsync(b.ToString());
+            return _dispo.SendCommandAsync(b.ToString());
         }
 
         /// <summary>
         /// Loescht Objekt anhand der ID
         /// </summary>
         /// <param name="id">ID des Objektes</param>
-        public async Task<BasicAntwort> Delete(int id)
+        public Task<BasicResponse> Delete(int id)
         {
-            return await _dispo.SendeBefehlAsync(string.Format("delete({0})", id));
+            return _dispo.SendCommandAsync(string.Format("delete({0})", id));
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// <param name="id">ID des Objektes</param>
         /// <param name="param">view oder control</param>
         /// <param name="force">Uebernimmt zwingend Lok von anderem Teilnehmer</param>>
-        public async Task<BasicAntwort> Request(int id, string param, bool force = false)
+        public Task<BasicResponse> Request(int id, string param, bool force = false)
         {
             if (string.IsNullOrWhiteSpace(param))
                 throw new ArgumentNullException("param", "param darf nicht null sein!");
@@ -198,7 +198,7 @@ namespace RailNet.Clients.Ecos.Basic
 
             query += force ? ", force)" : ")";
 
-            return await _dispo.SendeBefehlAsync(query);
+            return _dispo.SendCommandAsync(query);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// </summary>
         /// <param name="id">ID des Objektes</param>
         /// <param name="args">view und oder control</param>
-        public async Task<BasicAntwort> Release(int id, params string[] args)
+        public Task<BasicResponse> Release(int id, params string[] args)
         {
             if (args.Length == 0)
                 throw new ArgumentNullException("args", "args duerfen nicht leer sein!");
@@ -221,7 +221,7 @@ namespace RailNet.Clients.Ecos.Basic
             }
             b.Append(')');
 
-            return await _dispo.SendeBefehlAsync(b.ToString());
+            return _dispo.SendCommandAsync(b.ToString());
         }
     }
 }
