@@ -6,14 +6,12 @@
 open Fake
 open Fake.AssemblyInfoFile
 
-RestorePackages()
-
 // Directories
 let buildDir  = @"./build/"
 let testDir   = @"./test/"
 let deployDir = @"./deploy/"
 let sampleDir = @"./sample/"
-let packagesDir = @"./packages"
+let packagesDir = @"./packages/"
 
 // version info
 let version = "0.0"  // or retrieve from CI server
@@ -21,6 +19,10 @@ let version = "0.0"  // or retrieve from CI server
 // Targets
 Target "Clean" (fun _ ->
     CleanDirs [buildDir; testDir; deployDir]
+)
+
+Target "NuGet" (fun _ ->
+    RestorePackages()
 )
 
 //Target "SetVersions" (fun _ ->
@@ -56,7 +58,7 @@ Target "CompileTest" (fun _ ->
 Target "CompileSample" (fun _ ->
     !! @"src/Samples/**/*.csproj"
       |> MSBuildRelease sampleDir "Build"
-      |> Log "SamplesBuild-Output: "
+      |> Log "SampleBuild-Output: "
 )
 
 Target "NUnitTest" (fun _ ->
@@ -87,6 +89,7 @@ Target "Zip" (fun _ ->
 // Dependencies
 "Clean"
  // ==> "SetVersions"
+  ==> "NuGet"
   ==> "CompileLib"
   ==> "CompileTest"
   =?> ("CompileSample", not isLinux) 
@@ -95,4 +98,4 @@ Target "Zip" (fun _ ->
   ==> "Zip"
 
 // start build
-RunTargetOrDefault "Zip"
+RunTargetOrDefault "NUnitTest"
