@@ -62,7 +62,6 @@ namespace RailNet.Clients.Ecos.Basic
 
         /// <summary>
         /// Legt ein Objekt mit Eigenschaften unterhalb eines Objektmanagers an
-        /// <seealso cref="BasicClient.Set"/>
         /// </summary>
         /// <param name="id">ID des Objektmanagers</param>
         /// <param name="args">Argumente wie bei Set</param>

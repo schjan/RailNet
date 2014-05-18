@@ -106,7 +106,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// <param name="value">Wert</param>
         public Task<BasicResponse> Set(int id, string param, string value)
         {
-            return Set(id, new Dictionary<string, string>() {{param, value}});
+            return Set(id, new Dictionary<string, string> {{param, value}});
         }
 
         /// <summary>
@@ -143,7 +143,6 @@ namespace RailNet.Clients.Ecos.Basic
 
         /// <summary>
         /// Legt ein Objekt mit Eigenschaften unterhalb eines Objektmanagers an
-        /// <seealso cref="BasicClient.Set"/>
         /// </summary>
         /// <param name="id">ID des Objektmanagers</param>
         /// <param name="args">Argumente wie bei Set</param>
