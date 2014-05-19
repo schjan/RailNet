@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
     {
         private Mock<INetworkClient> mock;
         private NachrichtenDispo dispo;
+        const string command = "queryObjects(10, name)";
 
         [SetUp]
         public void SetUp()
@@ -26,19 +28,19 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         }
 
         [Test]
-        public async void TestDispoTimeout()
+        [ExpectedException(typeof(IOException))]
+        public async void SendCommandThrowsNotConnected()
         {
-            var result = await dispo.SendeBefehlAsync("queryObjects(10, name)");
+            mock.Setup(x => x.Connected).Returns(false);
 
-            Assert.That(result.Error, Is.EqualTo("Timeout!"));
+            await dispo.SendCommandAsync(command);
         }
 
-
         [Test]
-        public async void TestDispoVerarbeiten()
+        public async void SendCommandAsync()
         {
-            const string befehl = "queryObjects(10, name)";
-            var dings = dispo.SendeBefehlAsync(befehl);
+ 
+            var dings = dispo.SendCommandAsync(command);
 
             mock.Raise(x => x.MessageReceivedEvent += null,
                 new MessageReceivedEventArgs(
@@ -51,8 +53,58 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             var result = await dings;
 
-            mock.Verify(x => x.SendMessage(befehl), Times.Exactly(1));
-            Assert.That(result.Befehl, Is.EqualTo(befehl));
+            mock.Verify(x => x.SendMessage(command), Times.Exactly(1));
+            Assert.That(result.Command, Is.EqualTo(command));
+        }
+
+        [Test]
+        [ExpectedException(typeof (TimeoutException))]
+        public async void SendCommandAsyncTimeout()
+        {
+            var dings = dispo.SendCommandAsync(command);
+            
+            var result = await dings;
+
+            mock.Verify(x => x.SendMessage(command), Times.Exactly(1));
+            Assert.That(result.Command, Is.EqualTo(command));
+        }
+
+        [Test]
+        [Ignore("How is this possible?")]
+        public async void Send2CommandsAsync()
+        {
+            var first = dispo.SendCommandAsync(command);
+            var second = dispo.SendCommandAsync(command);
+
+            mock.Raise(x => x.MessageReceivedEvent += null,
+                new MessageReceivedEventArgs(
+                    new[]
+                    {
+                        "<REPLY queryObjects(10, name)>",
+                        "FIRST",
+                        "<END 0 (OK)>"
+                    }));
+
+
+            mock.Raise(x => x.MessageReceivedEvent += null,
+                new MessageReceivedEventArgs(
+                    new[]
+                    {
+                        "<REPLY queryObjects(10, name)>",
+                        "SECOND",
+                        "<END 0 (OK)>"
+                    }));
+
+            var result1 = await first;
+            var result2 = await second;
+
+            mock.Verify(x => x.SendMessage(command), Times.Exactly(2));
+
+            Assert.That(result1.Command, Is.EqualTo(command));
+            Assert.That(result2.Command, Is.EqualTo(command));
+
+            Assert.That(result1.Content[1], Is.EqualTo("FIRST"));
+            Assert.That(result2.Content[1], Is.EqualTo("SECOND"));
         }
     }
 }
