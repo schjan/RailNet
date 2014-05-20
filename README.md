@@ -9,7 +9,7 @@ Sobald der _RailClient_ teilweise implementiert ist, werde ich einige Beispiele 
 
 Hilfe ist übrigens auch immer gerne gesehen! ;)
 
-Die Library ist [Mono](http://www.mono-project.com/Main_Page) kompaktibel und kann somit auch auf Linux eingesetzt werden!
+Die Library ist [Mono](http://www.mono-project.com/Main_Page) kompaktibel und kann somit auch unter Linux und OSX eingesetzt werden!
 
 ##RailNet.Clients.Ecos
 Client für [ESU ECoS](http://www.esu.eu/produkte/digitale-steuerung/ecos-50200-zentrale/was-ecos-kann/)
