@@ -4,6 +4,7 @@
 build/
 deploy/
 test/
+sample/
 
 # mstest test results
 TestResults

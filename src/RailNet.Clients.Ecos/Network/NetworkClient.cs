@@ -84,9 +84,9 @@ namespace RailNet.Clients.Ecos.Network
         /// Connects async to ECoS
         /// </summary>
         /// <returns>SocketError Error</returns>
-        public async Task<SocketError> ConnectAsync(string host)
+        public Task<SocketError> ConnectAsync(string host)
         {
-            return await ConnectAsync(host, 15471);
+            return ConnectAsync(host, 15471);
         }
 
         /// <summary>
