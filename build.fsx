@@ -93,6 +93,11 @@ Target "CreatePackage" (fun _ ->
 
     CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
 
+    let ShouldPublish = isAppVeyorBuild && environVar "APPVEYOR_REPO_BRANCH" = "master" &&
+                        environVar "nugetkey" <> null 
+
+    printfn "Me should Publish?: %b" ShouldPublish
+
     NuGet (fun p -> 
         {p with
             Authors = ["Jannis Schaefer"]
@@ -103,13 +108,13 @@ Target "CreatePackage" (fun _ ->
             WorkingDir = packageDir
             Version = releaseNotes.AssemblyVersion
             ReleaseNotes = toLines releaseNotes.Notes
-            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            AccessKey = environVarOrDefault "nugetkey" ""
 
             Dependencies = 
                 ["NLog", GetPackageVersion packagesDir "NLog"
                  "Rx-Main", GetPackageVersion packagesDir "Rx-Main"]
 
-            Publish = hasBuildParam "nugetkey" }) "RailNet.Clients.Ecos.nuspec"        
+            Publish = ShouldPublish }) "RailNet.Clients.Ecos.nuspec"        
 )
 
 Target "Zip" (fun _ ->
