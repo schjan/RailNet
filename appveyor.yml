@@ -1,0 +1,7 @@
+init:
+  - git config --global core.autocrlf input
+build_script:
+  - cmd: build.cmd createpackage
+test: off
+artifacts:
+  - path: deploy\*.nupkg

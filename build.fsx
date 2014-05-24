@@ -1,48 +1,55 @@
 // include Fake lib
-#I @"tools/FAKE/tools/"
 #I @"packages/FAKE/tools/"
 #r @"FakeLib.dll"
 
 open Fake
 open Fake.AssemblyInfoFile
 
-RestorePackages()
+let isAppVeyorBuild = environVar "APPVEYOR" <> null
 
 // Directories
 let buildDir  = @"./build/"
 let testDir   = @"./test/"
 let deployDir = @"./deploy/"
+let packageDir = @"./package/"
 let sampleDir = @"./sample/"
-let packagesDir = @"./packages"
+let packagesDir = @"./packages/"
 
-// version info
-let version = "0.0"  // or retrieve from CI server
+let projectName = "RailNet.Clients.EcoS"
+let projectDescription = "An async-based ECoS model railway client for .NET"
+let projectSummary = projectDescription
+
+let releaseNotes = 
+    ReadFile "ReleaseNotes.md"
+    |> ReleaseNotesHelper.parseReleaseNotes
 
 // Targets
 Target "Clean" (fun _ ->
-    CleanDirs [buildDir; testDir; deployDir]
+    CleanDirs [buildDir; testDir; deployDir; packageDir]
 )
 
-//Target "SetVersions" (fun _ ->
-//    CreateCSharpAssemblyInfo "./src/app/Calculator/Properties/AssemblyInfo.cs"
-//        [Attribute.Title "Calculator Command line tool"
-//         Attribute.Description "Sample project for FAKE - F# MAKE"
-//         Attribute.Guid "A539B42C-CB9F-4a23-8E57-AF4E7CEE5BAA"
-//         Attribute.Product "Calculator"
-//         Attribute.Version version
-//         Attribute.FileVersion version]
-//
-//    CreateCSharpAssemblyInfo "./src/app/CalculatorLib/Properties/AssemblyInfo.cs"
-//        [Attribute.Title "Calculator library"
-//         Attribute.Description "Sample project for FAKE - F# MAKE"
-//         Attribute.Guid "EE5621DB-B86B-44eb-987F-9C94BCC98441"
-//         Attribute.Product "Calculator"
-//         Attribute.Version version
-//         Attribute.FileVersion version]
-//)
+Target "NuGet" (fun _ ->
+    RestorePackages()
+)
+
+Target "SetVersions" (fun _ ->
+    CreateCSharpAssemblyInfo "./src/RailNet.Clients.Ecos/Properties/AssemblyInfo.cs"
+        [Attribute.Title "RailNet.Clients.Ecos"
+         Attribute.Description projectDescription
+         Attribute.Product projectName
+         Attribute.Version releaseNotes.AssemblyVersion
+         Attribute.FileVersion releaseNotes.AssemblyVersion]
+
+    CreateCSharpAssemblyInfo "./src/RailNet.Core/Properties/AssemblyInfo.cs"
+        [Attribute.Title "RailNet.Core"
+         Attribute.Description projectDescription
+         Attribute.Product projectName
+         Attribute.Version releaseNotes.AssemblyVersion
+         Attribute.FileVersion releaseNotes.AssemblyVersion]
+)
 
 Target "CompileLib" (fun _ ->
-    !! @"src/RailNet*/*.csproj"
+    !! @"src/RailNet.Clients.Ecos/*.csproj"
       |> MSBuildRelease buildDir "Build"
       |> Log "LibBuild-Output: "
 )
@@ -56,7 +63,7 @@ Target "CompileTest" (fun _ ->
 Target "CompileSample" (fun _ ->
     !! @"src/Samples/**/*.csproj"
       |> MSBuildRelease sampleDir "Build"
-      |> Log "SamplesBuild-Output: "
+      |> Log "SampleBuild-Output: "
 )
 
 Target "NUnitTest" (fun _ ->
@@ -77,22 +84,57 @@ Target "NUnitTest" (fun _ ->
 //                ToolPath = fxCopRoot})
 //)
 
-Target "Zip" (fun _ ->
-    !+ (buildDir + "/**/*.*")
-        -- "*.zip"
-        |> Scan
-        |> Zip buildDir (deployDir + "RailNet." + version + ".zip")
+Target "CreatePackage" (fun _ ->
+    let net45Dir = packageDir @@ "lib/net45/"
+    CleanDirs [net45Dir]
+
+    CopyFile net45Dir (buildDir @@ "RailNet.Core.dll")
+    CopyFile net45Dir (buildDir @@ "RailNet.Clients.Ecos.dll")
+
+    CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
+
+    let ShouldPublish = isAppVeyorBuild && environVar "APPVEYOR_REPO_BRANCH" = "master" &&
+                        environVar "nugetkey" <> null 
+
+    printfn "Me should Publish?: %b" ShouldPublish
+
+    NuGet (fun p -> 
+        {p with
+            Authors = ["Jannis Schaefer"]
+            Project = projectName
+            Description = projectDescription
+            OutputPath = deployDir
+            Summary = projectSummary
+            WorkingDir = packageDir
+            Version = releaseNotes.AssemblyVersion
+            ReleaseNotes = toLines releaseNotes.Notes
+            AccessKey = environVarOrDefault "nugetkey" ""
+
+            Dependencies = 
+                ["NLog", GetPackageVersion packagesDir "NLog"
+                 "Rx-Main", GetPackageVersion packagesDir "Rx-Main"]
+
+            Publish = ShouldPublish }) "RailNet.Clients.Ecos.nuspec"        
 )
 
-// Dependencies
+Target "Zip" (fun _ ->
+    !! (buildDir + "/**/*.*")
+        -- "*.zip"
+        |> Zip buildDir (deployDir + "RailNet." + releaseNotes.AssemblyVersion + ".zip")
+)
+
+
 "Clean"
- // ==> "SetVersions"
+  ==> "SetVersions"
+  ==> "NuGet"
   ==> "CompileLib"
   ==> "CompileTest"
   =?> ("CompileSample", not isLinux) 
 //  ==> "FxCop"
   ==> "NUnitTest"
+  ==> "CreatePackage"
   ==> "Zip"
 
+
 // start build
-RunTargetOrDefault "Zip"
+RunTargetOrDefault "NUnitTest"

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{D7D2F7BD-3E2B-4357-BB53-42E9D0888E54}"
 EndProject
@@ -25,6 +25,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3E51F666-FF7C-4E42-A7FA-9A26D31B4F60}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Signalsteuerung.WF", "Samples\RailNet.Signalsteuerung.WF\RailNet.Signalsteuerung.WF.csproj", "{19652E0C-096F-4D7F-8708-C7BA0F211BD3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{AA2D6EEF-B198-44B5-A4FC-ECCCD957D73A}"
+	ProjectSection(SolutionItems) = preProject
+		..\build.bat = ..\build.bat
+		..\build.fsx = ..\build.fsx
+		..\build.sh = ..\build.sh
+		..\ReleaseNotes.md = ..\ReleaseNotes.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,8 +69,5 @@ Global
 		{3DEABBFB-0FB1-471D-ACB7-2038C29F2431} = {72B5F6A9-405F-465F-9428-B1D3EDE51CAC}
 		{D1EF21E1-A3F5-4C72-B968-04FA606EE651} = {72B5F6A9-405F-465F-9428-B1D3EDE51CAC}
 		{19652E0C-096F-4D7F-8708-C7BA0F211BD3} = {3E51F666-FF7C-4E42-A7FA-9A26D31B4F60}
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

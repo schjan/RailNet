@@ -33,7 +33,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         {
             var result = await client.QueryObjects(10);
 
-            mock.Verify(x => x.SendeBefehlAsync("queryObjects(10)"), Times.Once());
+            mock.Verify(x => x.SendCommandAsync("queryObjects(10)"), Times.Once());
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         {
             var result = await client.QueryObjects(10, "info");
 
-            mock.Verify(x => x.SendeBefehlAsync("queryObjects(10, info)"), Times.Once());
+            mock.Verify(x => x.SendCommandAsync("queryObjects(10, info)"), Times.Once());
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         {
             var result = await client.QueryObjectsSize(10);
 
-            mock.Verify(x => x.SendeBefehlAsync("queryObjects(10, size)"), Times.Once());
+            mock.Verify(x => x.SendCommandAsync("queryObjects(10, size)"), Times.Once());
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         {
             var result = await client.QueryObjects(10, 0, 2, "info");
 
-            mock.Verify(x => x.SendeBefehlAsync("queryObjects(10, info, nr[0,2])"), Times.Once());
+            mock.Verify(x => x.SendCommandAsync("queryObjects(10, info, nr[0,2])"), Times.Once());
         }
 
 
@@ -83,7 +83,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         public async void Q_Set()
         {
             const string query = "set(5, addr[3])";
-            mock.Setup(x => x.SendeBefehlAsync(query)).ReturnsAsync(new BasicAntwort(
+            mock.Setup(x => x.SendCommandAsync(query)).ReturnsAsync(new BasicResponse(
                 new[]
                 {
                     "<REPLY " + query + ">",
@@ -93,8 +93,8 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             var result = await client.Set(5, "addr", "3");
 
-            mock.Verify(x => x.SendeBefehlAsync(query), Times.Once());
-            Assert.That(result.Befehl, Is.EqualTo(query));
+            mock.Verify(x => x.SendCommandAsync(query), Times.Once());
+            Assert.That(result.Command, Is.EqualTo(query));
             Assert.That(result.Content[1], Is.EqualTo("5 addr[3]"));
         }
 
@@ -110,7 +110,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
                 {"name", "Big Boy"}
             });
 
-            mock.Verify(x => x.SendeBefehlAsync(query), Times.Once());
+            mock.Verify(x => x.SendCommandAsync(query), Times.Once());
         }
 
         #endregion
@@ -128,7 +128,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         public async void Q_Get()
         {
             const string query = "get(5, info)";
-            mock.Setup(x => x.SendeBefehlAsync(query)).ReturnsAsync(new BasicAntwort(
+            mock.Setup(x => x.SendCommandAsync(query)).ReturnsAsync(new BasicResponse(
                 new[]
                 {
                     "<REPLY " + query + ">",
@@ -138,8 +138,8 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             var result = await client.Get(5, "info");
 
-            mock.Verify(x => x.SendeBefehlAsync(query), Times.Once());
-            Assert.That(result.Befehl, Is.EqualTo(query));
+            mock.Verify(x => x.SendCommandAsync(query), Times.Once());
+            Assert.That(result.Command, Is.EqualTo(query));
             Assert.That(result.Content[1], Is.EqualTo("5 name[\"Big Boy\"]"));
         }
 
@@ -154,7 +154,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             await client.Create(5);
 
-            mock.Verify(x => x.SendeBefehlAsync(query));
+            mock.Verify(x => x.SendCommandAsync(query));
         }
 
         [Test]
@@ -164,7 +164,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             await client.Create(5, true);
 
-            mock.Verify(x => x.SendeBefehlAsync(query));
+            mock.Verify(x => x.SendCommandAsync(query));
         }
 
 
@@ -179,7 +179,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
                 {"addr", "5"}
             });
 
-            mock.Verify(x => x.SendeBefehlAsync(query));
+            mock.Verify(x => x.SendCommandAsync(query));
         }
 
         [Test]
@@ -193,7 +193,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
                 {"addr", "5"}
             }, true);
 
-            mock.Verify(x => x.SendeBefehlAsync(query));
+            mock.Verify(x => x.SendCommandAsync(query));
         }
 
         #endregion
@@ -207,7 +207,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             await client.Delete(5);
 
-            mock.Verify(x => x.SendeBefehlAsync(query));
+            mock.Verify(x => x.SendCommandAsync(query));
         }
 
         #endregion
@@ -229,7 +229,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             await client.Request(5, "view");
 
-            mock.Verify(x => x.SendeBefehlAsync(query));
+            mock.Verify(x => x.SendCommandAsync(query));
         }
 
         [Test]
@@ -239,7 +239,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             await client.Request(5, "view", true);
 
-            mock.Verify(x => x.SendeBefehlAsync(query));
+            mock.Verify(x => x.SendCommandAsync(query));
         }
 
         #endregion
@@ -260,7 +260,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             await client.Release(5, "view", "control");
 
-            mock.Verify(x => x.SendeBefehlAsync(query));
+            mock.Verify(x => x.SendCommandAsync(query));
         }
 
         #endregion
