@@ -48,7 +48,7 @@ Target "SetVersions" (fun _ ->
 )
 
 Target "CompileLib" (fun _ ->
-    !! @"src/RailNet*/*.csproj"
+    !! @"src/RailNet.Clients.Ecos/*.csproj"
       |> MSBuildRelease buildDir "Build"
       |> Log "LibBuild-Output: "
 )
