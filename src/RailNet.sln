@@ -26,6 +26,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3E51
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Signalsteuerung.WF", "Samples\RailNet.Signalsteuerung.WF\RailNet.Signalsteuerung.WF.csproj", "{19652E0C-096F-4D7F-8708-C7BA0F211BD3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{AA2D6EEF-B198-44B5-A4FC-ECCCD957D73A}"
+	ProjectSection(SolutionItems) = preProject
+		..\build.bat = ..\build.bat
+		..\build.fsx = ..\build.fsx
+		..\build.sh = ..\build.sh
+		..\ReleaseNotes.md = ..\ReleaseNotes.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
