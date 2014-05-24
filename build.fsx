@@ -104,6 +104,11 @@ Target "CreatePackage" (fun _ ->
             Version = releaseNotes.AssemblyVersion
             ReleaseNotes = toLines releaseNotes.Notes
             AccessKey = getBuildParamOrDefault "nugetkey" ""
+
+            Dependencies = 
+                ["NLog", GetPackageVersion packagesDir "NLog"
+                 "Rx-Main", GetPackageVersion packagesDir "Rx-Main"]
+
             Publish = hasBuildParam "nugetkey" }) "RailNet.Clients.Ecos.nuspec"        
 )
 

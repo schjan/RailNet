@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>@description@</description>
     <releaseNotes>@releaseNotes@</releaseNotes>
-    <copyright>Copyright GitHub 2013</copyright>    
+    <copyright>Copyright Jannis Schaefer 2014</copyright>    
     <tags>RailNet ECoS Modelrailway Railroad</tags>
     @dependencies@
     @references@
