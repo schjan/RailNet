@@ -11,6 +11,7 @@ let isAppVeyorBuild = environVar "APPVEYOR" <> null
 let buildDir  = @"./build/"
 let testDir   = @"./test/"
 let deployDir = @"./deploy/"
+let packageDir = @"./package/"
 let sampleDir = @"./sample/"
 let packagesDir = @"./packages/"
 
@@ -24,7 +25,7 @@ let releaseNotes =
 
 // Targets
 Target "Clean" (fun _ ->
-    CleanDirs [buildDir; testDir; deployDir]
+    CleanDirs [buildDir; testDir; deployDir; packageDir]
 )
 
 Target "NuGet" (fun _ ->
@@ -40,7 +41,7 @@ Target "SetVersions" (fun _ ->
          Attribute.FileVersion releaseNotes.AssemblyVersion]
 
     CreateCSharpAssemblyInfo "./src/RailNet.Core/Properties/AssemblyInfo.cs"
-        [Attribute.Title "Calculator library"
+        [Attribute.Title "RailNet.Core"
          Attribute.Description projectDescription
          Attribute.Product projectName
          Attribute.Version releaseNotes.AssemblyVersion
@@ -84,23 +85,35 @@ Target "NUnitTest" (fun _ ->
 //)
 
 Target "CreatePackage" (fun _ ->
-    let net45Dir = deployDir @@ "lib/net45/"
+    let net45Dir = packageDir @@ "lib/net45/"
     CleanDirs [net45Dir]
 
     CopyFile net45Dir (buildDir @@ "RailNet.Core.dll")
     CopyFile net45Dir (buildDir @@ "RailNet.Clients.Ecos.dll")
 
-    CopyFiles deployDir ["README.md"; "ReleaseNotes.md"]
+    CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
+
+    NuGet (fun p -> 
+        {p with
+            Authors = ["Jannis Schaefer"]
+            Project = projectName
+            Description = projectDescription
+            OutputPath = deployDir
+            Summary = projectSummary
+            WorkingDir = packageDir
+            Version = releaseNotes.AssemblyVersion
+            ReleaseNotes = toLines releaseNotes.Notes
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey" }) "RailNet.Clients.Ecos.nuspec"        
 )
 
 Target "Zip" (fun _ ->
-    !+ (buildDir + "/**/*.*")
+    !! (buildDir + "/**/*.*")
         -- "*.zip"
-        |> Scan
         |> Zip buildDir (deployDir + "RailNet." + releaseNotes.AssemblyVersion + ".zip")
 )
 
-// Dependencies
+
 "Clean"
   ==> "SetVersions"
   ==> "NuGet"
@@ -114,4 +127,4 @@ Target "Zip" (fun _ ->
 
 
 // start build
-RunTargetOrDefault "CreatePackage"
+RunTargetOrDefault "NUnitTest"
