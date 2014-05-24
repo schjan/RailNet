@@ -11,6 +11,9 @@ Hilfe ist übrigens auch immer gerne gesehen! ;)
 
 Die Library ist [Mono](http://www.mono-project.com/Main_Page) kompaktibel und kann somit auch unter Linux und OSX eingesetzt werden!
 
+###NuGet
+RailNet.Clients.EcoS ist über NuGet verfügbar über "[Install-Package RailNet.Clients.Ecos](https://www.nuget.org/packages/RailNet.Clients.EcoS/)"
+
 ##RailNet.Clients.Ecos
 Client für [ESU ECoS](http://www.esu.eu/produkte/digitale-steuerung/ecos-50200-zentrale/was-ecos-kann/)
 ###BasicClient
