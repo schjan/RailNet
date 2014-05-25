@@ -5,6 +5,7 @@ build/
 deploy/
 test/
 sample/
+package/
 
 # mstest test results
 TestResults

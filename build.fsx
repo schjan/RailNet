@@ -38,6 +38,7 @@ Target "SetVersions" (fun _ ->
          Attribute.Description projectDescription
          Attribute.Product projectName
          Attribute.Version releaseNotes.AssemblyVersion
+         Attribute.Guid "17abf373-a1b5-41d4-8859-89e2b279a0b5"
          Attribute.FileVersion releaseNotes.AssemblyVersion]
 
     CreateCSharpAssemblyInfo "./src/RailNet.Core/Properties/AssemblyInfo.cs"
@@ -45,7 +46,8 @@ Target "SetVersions" (fun _ ->
          Attribute.Description projectDescription
          Attribute.Product projectName
          Attribute.Version releaseNotes.AssemblyVersion
-         Attribute.FileVersion releaseNotes.AssemblyVersion]
+         Attribute.FileVersion releaseNotes.AssemblyVersion
+         Attribute.Guid "48353882-6320-403e-8c2e-820288731ad0"]
 )
 
 Target "CompileLib" (fun _ ->
@@ -108,7 +110,7 @@ Target "CreatePackage" (fun _ ->
             OutputPath = deployDir
             Summary = projectSummary
             WorkingDir = packageDir
-            Version = releaseNotes.AssemblyVersion
+            Version = releaseNotes.NugetVersion
             ReleaseNotes = toLines releaseNotes.Notes
             AccessKey = environVarOrDefault "nugetkey" ""
 
