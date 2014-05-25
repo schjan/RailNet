@@ -28,8 +28,15 @@ namespace RailNet.Clients.Ecos.Basic
         private readonly INetworkClient _networkClient;
 
         private readonly IObservable<BasicResponse> incomingMessages;
-        // TODO: incomingEvents
-        //private IObservable<BasicEvent> incomingEvents; 
+        private readonly IObservable<BasicEvent> incomingEvents;
+
+        /// <summary>
+        /// Eine IObservable von Serverseitigen Events
+        /// </summary>
+        public IObservable<BasicEvent> IncomingEvents
+        {
+            get { return incomingEvents; }
+        }
 
         /// <summary>
         /// Default constructor gets the INetworkClient from IoC
@@ -37,7 +44,7 @@ namespace RailNet.Clients.Ecos.Basic
         public NachrichtenDispo()
             : this(TinyIoCContainer.Current.Resolve<INetworkClient>())
         {
-
+            
         }
 
         public NachrichtenDispo(INetworkClient networkClient)
@@ -52,6 +59,14 @@ namespace RailNet.Clients.Ecos.Basic
                 .Where(ValidateMessage)
                 .Where(x => GetMessageType(x) == MessageType.Reply)
                 .Select(ParseResponse);
+
+            incomingEvents = Observable.FromEventPattern<MessageReceivedEventHandler, MessageReceivedEventArgs>(
+                h => _networkClient.MessageReceivedEvent += h,
+                h => _networkClient.MessageReceivedEvent -= h)
+                .Select(x => x.EventArgs.Content)
+                .Where(ValidateMessage)
+                .Where(x => GetMessageType(x) == MessageType.Event)
+                .Select(ParseEvent);
         }
 
        /// <summary>
@@ -83,6 +98,15 @@ namespace RailNet.Clients.Ecos.Basic
             response.ExtractError();
 
             return response;
+        }
+
+        private BasicEvent ParseEvent(string[] message)
+        {
+            var Event = new BasicEvent(message);
+
+            Event.ExtractError();
+
+            return Event;
         }
 
         // TODO: Mehr Validation noetig?

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +18,15 @@ namespace RailNet.Clients.Ecos.Tests.Basic
     {
         private Mock<INachrichtenDispo> mock;
         private BasicClient client;
+        private Subject<BasicEvent> incomingEvents;
 
         [SetUp]
         public void SetUp()
         {
             mock = new Mock<INachrichtenDispo>();
-
+            incomingEvents = new Subject<BasicEvent>();
+            mock.Setup(x => x.IncomingEvents).Returns(incomingEvents);
+            
             client = new BasicClient(mock.Object);
         }
 
@@ -261,6 +265,29 @@ namespace RailNet.Clients.Ecos.Tests.Basic
             await client.Release(5, "view", "control");
 
             mock.Verify(x => x.SendCommandAsync(query));
+        }
+
+        #endregion
+
+        #region Events
+
+        [Test]
+        public void E_CallsEventHandler()
+        {
+            bool hasReceived = false;
+
+            client.EventReceived += (sender, args) =>
+            {
+                hasReceived = true;
+                Assert.That(args.Event.Receiver, Is.EqualTo(1000));
+                Assert.That(args.Event.ErrorNumber, Is.EqualTo(0));
+            };
+
+            Assert.IsFalse(hasReceived);
+
+            incomingEvents.OnNext(new BasicEvent(new[] {"<EVENT 1000>", "50 X", "<END 0 (OK)>"}));
+
+            Assert.IsTrue(hasReceived);
         }
 
         #endregion
