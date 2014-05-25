@@ -90,6 +90,8 @@ Target "CreatePackage" (fun _ ->
 
     CopyFile net45Dir (buildDir @@ "RailNet.Core.dll")
     CopyFile net45Dir (buildDir @@ "RailNet.Clients.Ecos.dll")
+    CopyFile net45Dir (buildDir @@ "RailNet.Core.xml")
+    CopyFile net45Dir (buildDir @@ "RailNet.Clients.Ecos.xml")
 
     CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
 
