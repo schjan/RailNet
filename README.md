@@ -35,7 +35,7 @@ Siehe RailClient. Nur das gleiche als Interface für erweiterbarkeit.
 
 ##Lizenz
 
-Beim bearbeiten oder kopieren dieses Repositories ist, neben der hier verwendeten Lizenz, unbedingt auf die Lizenzbestimmungen von ESU (Besonders auf Punkt 1.3) zu achten.
+Beim bearbeiten oder kopieren dieses Repositories ist, neben der hier verwendeten Lizenz ([Apache 2.0](https://github.com/schjan/RailNet/blob/master/LICENSE)), unbedingt auf die Lizenzbestimmungen von ESU (Besonders auf Punkt 1.3) zu achten.
 >__1.3. Verbotene Nutzung__
 
 
