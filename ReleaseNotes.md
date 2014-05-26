@@ -1,3 +1,6 @@
+#### 0.0.3 -
+* Serverside Events implemented in BasicClient
+
 #### 0.0.2-alpha - 
 * Include xml documentation in NuGet package
 
