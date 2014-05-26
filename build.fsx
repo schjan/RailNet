@@ -2,8 +2,11 @@
 #I @"packages/FAKE/tools/"
 #r @"FakeLib.dll"
 
+open System
 open Fake
 open Fake.AssemblyInfoFile
+open Fake.Git
+open Fake.AppVeyor
 
 let isAppVeyorBuild = environVar "APPVEYOR" <> null
 
@@ -97,11 +100,19 @@ Target "CreatePackage" (fun _ ->
 
     CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
 
-    let ShouldPublish = isAppVeyorBuild && environVar "APPVEYOR_REPO_BRANCH" = "master" &&
-                        environVar "nugetkey" <> null 
+    let ShouldPublish = isAppVeyorBuild && environVar "nugetkey" <> null &&
+                        (getBranchName "" = "master" || getBranchName "" = "dev")
+    
+    if ShouldPublish then printfn "Me should Publish?: %b" ShouldPublish
 
-    printfn "Me should Publish?: %b" ShouldPublish
-
+    let version = if ShouldPublish then 
+                    match getBranchName "" with
+                    | "master" -> releaseNotes.NugetVersion
+                    | "dev" -> releaseNotes.AssemblyVersion + "-alpha" + AppVeyorEnvironment.BuildNumber
+                    | _ -> releaseNotes.NugetVersion
+                    else
+                      releaseNotes.NugetVersion          
+      
     NuGet (fun p -> 
         {p with
             Authors = ["Jannis Schaefer"]
@@ -110,7 +121,7 @@ Target "CreatePackage" (fun _ ->
             OutputPath = deployDir
             Summary = projectSummary
             WorkingDir = packageDir
-            Version = releaseNotes.NugetVersion
+            Version = version
             ReleaseNotes = toLines releaseNotes.Notes
             AccessKey = environVarOrDefault "nugetkey" ""
 
@@ -132,10 +143,10 @@ Target "Zip" (fun _ ->
   ==> "SetVersions"
   ==> "NuGet"
   ==> "CompileLib"
-  ==> "CompileTest"
-  =?> ("CompileSample", not isLinux) 
-//  ==> "FxCop"
+  ==> "CompileTest"  
+  //  ==> "FxCop"
   ==> "NUnitTest"
+  =?> ("CompileSample", not isLinux) 
   ==> "CreatePackage"
   ==> "Zip"
 
