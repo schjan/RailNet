@@ -101,12 +101,12 @@ Target "CreatePackage" (fun _ ->
     CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
 
     let ShouldPublish = isAppVeyorBuild && environVar "nugetkey" <> null &&
-                        (getBranchName "" = "master" || getBranchName "" = "dev")
+                        (environVar "APPVEYOR_REPO_BRANCH" = "master" || environVar "APPVEYOR_REPO_BRANCH" = "dev")
     
     if ShouldPublish then printfn "Me should Publish?: %b" ShouldPublish
 
     let version = if ShouldPublish then 
-                    match getBranchName "" with
+                    match environVar "APPVEYOR_REPO_BRANCH" with
                     | "master" -> releaseNotes.NugetVersion
                     | "dev" -> releaseNotes.AssemblyVersion + "-alpha" + AppVeyorEnvironment.BuildNumber
                     | _ -> releaseNotes.NugetVersion
