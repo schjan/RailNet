@@ -14,11 +14,12 @@ namespace RailNet.Clients.Ecos.Basic
         public BasicClient(INachrichtenDispo dispo)
         {
             _dispo = dispo;
+            _dispo.IncomingEvents.Subscribe(RaiseEventReceived);
         }
 
         public BasicClient()
+            : this(TinyIoCContainer.Current.Resolve<INachrichtenDispo>())
         {
-            _dispo = TinyIoCContainer.Current.Resolve<INachrichtenDispo>();
         }
 
         /// <summary>
@@ -221,6 +222,18 @@ namespace RailNet.Clients.Ecos.Basic
             b.Append(')');
 
             return _dispo.SendCommandAsync(b.ToString());
+        }
+
+
+        /// <summary>
+        /// EventReceivedEvents wird ausgeführt, wenn ein Serverseitiges Event empfangen wurde.
+        /// </summary>
+        public event EventReceivedHandler EventReceived;
+
+        protected void RaiseEventReceived(BasicEvent response)
+        {
+            if (EventReceived != null)
+                EventReceived(this, new EventReceivedArgs(response));
         }
     }
 }
