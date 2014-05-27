@@ -6,10 +6,4 @@ if [ ! -f packages/FAKE/tools/Fake.exe ]; then
   mono --runtime=v4.0 src/.nuget/NuGet.exe install NUnit.Runners -OutputDirectory tools -ExcludeVersion 
   mono --runtime=v4.0 src/.nuget/NuGet.exe install NUnit -OutputDirectory tools -ExcludeVersion
 fi
-echo "LS packages"
-ls packages
-echo "LS tools"
-ls tools
-echo "LS tools/Nunit"
-ls tools/Nunit
 mono --runtime=v4.0 packages/FAKE/tools/FAKE.exe build.fsx $@

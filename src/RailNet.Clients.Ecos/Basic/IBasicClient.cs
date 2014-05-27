@@ -89,5 +89,26 @@ namespace RailNet.Clients.Ecos.Basic
         /// <param name="id">ID des Objektes</param>
         /// <param name="args">view und oder control</param>
         Task<BasicResponse> Release(int id, params string[] args);
+
+
+        /// <summary>
+        /// EventReceivedEvents wird ausgeführt, wenn ein Serverseitiges Event empfangen wurde.
+        /// </summary>
+        event EventReceivedHandler EventReceived;
+    }
+
+    public delegate void EventReceivedHandler(object sender, EventReceivedArgs e);
+
+    /// <summary>
+    /// EventArgs for EventReceivedEvent
+    /// </summary>
+    public class EventReceivedArgs : EventArgs
+    {
+        public EventReceivedArgs(BasicEvent evt)
+        {
+            Event = evt;
+        }
+
+        public BasicEvent Event { get; private set; }
     }
 }

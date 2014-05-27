@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RailNet.Clients.Ecos.Basic
@@ -15,5 +12,10 @@ namespace RailNet.Clients.Ecos.Basic
         /// <param name="command"></param>
         /// <returns></returns>
         Task<BasicResponse> SendCommandAsync(string command);
+
+        /// <summary>
+        /// Eine IObservable von Serverseitigen Events
+        /// </summary>
+        IObservable<BasicEvent> IncomingEvents { get; }
     }
 }
