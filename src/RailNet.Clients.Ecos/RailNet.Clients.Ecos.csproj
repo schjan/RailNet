@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic\BasicEvent.cs" />
+    <Compile Include="Basic\BasicParser.cs" />
     <Compile Include="Basic\BasicResponse.cs" />
     <Compile Include="Basic\BasicClient.cs" />
     <Compile Include="Basic\IBasicClient.cs" />

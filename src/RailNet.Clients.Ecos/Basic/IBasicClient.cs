@@ -47,6 +47,13 @@ namespace RailNet.Clients.Ecos.Basic
         Task<BasicResponse> Set(int id, string param, string value);
 
         /// <summary>
+        /// Setzt einzelne Eigenschaften eines Objektes
+        /// </summary>
+        /// <param name="id">ID des Objektes</param>
+        /// <param name="param">Parameter</param>
+        Task<BasicResponse> Set(int id, string param);
+
+        /// <summary>
         /// Fragt Eigenschaften eines Objektes ab
         /// </summary>
         /// <param name="id">ID des Objektes</param>

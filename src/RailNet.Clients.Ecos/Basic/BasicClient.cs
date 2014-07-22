@@ -87,12 +87,11 @@ namespace RailNet.Clients.Ecos.Basic
                 if (string.IsNullOrWhiteSpace(arg.Key) || string.IsNullOrWhiteSpace(arg.Value))
                     throw new ArgumentNullException("args", "Im Dictionary darf kein leerer String vorkommen!");
 
-                str.Append(", ");
-                str.Append(arg.Key);
-                str.Append('[');
-                str.Append(arg.Key == "name" ? string.Format("\"{0}\"", arg.Value) : arg.Value);
-
-                str.Append(']');
+                str.Append(", ")
+                    .Append(arg.Key)
+                    .Append('[')
+                    .Append(arg.Key == "name" ? string.Format("\"{0}\"", arg.Value) : arg.Value)
+                    .Append(']');
             }
             str.Append(')');
 
@@ -111,6 +110,25 @@ namespace RailNet.Clients.Ecos.Basic
         }
 
         /// <summary>
+        /// Setzt einzelne Eigenschaften eines Objektes
+        /// </summary>
+        /// <param name="id">ID des Objektes</param>
+        /// <param name="param">Parameter</param>
+        public Task<BasicResponse> Set(int id, string param)
+        {
+            if (string.IsNullOrWhiteSpace(param))
+                throw new ArgumentNullException("param", "args duerfen nicht leer sein!");
+
+            var b = new StringBuilder("set(");
+            b.Append(id)
+                .Append(", ")
+                .Append(param)
+                .Append(')');
+
+            return _dispo.SendCommandAsync(b.ToString());
+        }
+
+        /// <summary>
         /// Fragt Eigenschaften eines Objektes ab
         /// </summary>
         /// <param name="id">ID des Objektes</param>
@@ -124,8 +142,8 @@ namespace RailNet.Clients.Ecos.Basic
             b.Append(id);
             foreach (var arg in args)
             {
-                b.Append(", ");
-                b.Append(arg);
+                b.Append(", ")
+                    .Append(arg);
             }
             b.Append(')');
 
@@ -159,11 +177,11 @@ namespace RailNet.Clients.Ecos.Basic
                     if (string.IsNullOrWhiteSpace(arg.Key) || string.IsNullOrWhiteSpace(arg.Value))
                         throw new ArgumentNullException("args", "Im Dictionary darf kein leerer String vorkommen!");
 
-                    b.Append(", ");
-                    b.Append(arg.Key);
-                    b.Append('[');
-                    b.Append(arg.Key == "name" ? string.Format("\"{0}\"", arg.Value) : arg.Value);
-                    b.Append(']');
+                    b.Append(", ")
+                        .Append(arg.Key)
+                        .Append('[')
+                        .Append(arg.Key == "name" ? string.Format("\"{0}\"", arg.Value) : arg.Value)
+                        .Append(']');
                 }
 
             if (append)
@@ -230,6 +248,9 @@ namespace RailNet.Clients.Ecos.Basic
         /// </summary>
         public event EventReceivedHandler EventReceived;
 
+        /// <summary>
+        /// Raises a BasicEvent
+        /// </summary>
         protected void RaiseEventReceived(BasicEvent response)
         {
             if (EventReceived != null)

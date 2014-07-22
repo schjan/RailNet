@@ -69,6 +69,12 @@ namespace RailNet.Clients.Ecos.Basic
                 .Select(ParseEvent);
         }
 
+#if DEBUG
+        private const int timeout = 5;
+#else
+        private const int timeout = 2;
+#endif
+
        /// <summary>
        /// Von ausserhalb Aufgerufene Methode zum senden einer Nachricht.
        /// Sendet eine Nachricht und liefert die Antwort der Nachricht asynchron.
@@ -82,7 +88,7 @@ namespace RailNet.Clients.Ecos.Basic
 
             var result = incomingMessages
                 .Where(reply => reply.Command == command)
-                .Timeout(TimeSpan.FromSeconds(2))
+                .Timeout(TimeSpan.FromSeconds(timeout))
                 .Take(1)
                 .ToTask();
 
@@ -130,7 +136,7 @@ namespace RailNet.Clients.Ecos.Basic
 
         private MessageType GetMessageType(string[] message)
         {
-            if (message.Length < 3)
+            if (message.Length < 2)
                 return MessageType.Undefined;
 
             if (message[0].StartsWith("<REPLY "))
