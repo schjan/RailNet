@@ -20,7 +20,7 @@ namespace RailNet.Clients.Ecos
             get { return container.Resolve<INetworkClient>(); }
         }
 
-        public bool Connected
+        public override bool Connected
         {
             get
             {
@@ -41,7 +41,7 @@ namespace RailNet.Clients.Ecos
             return false;
         }
 
-        public void Disconnect()
+        public override void Disconnect()
         {
             networkClient.Disconnect();
         }

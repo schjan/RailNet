@@ -12,5 +12,8 @@ namespace RailNet.Core
         {
             
         }
+
+        public abstract bool Connected { get; }
+        public abstract void Disconnect();
     }
 }
