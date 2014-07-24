@@ -39,7 +39,6 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         [Test]
         public async void SendCommandAsync()
         {
- 
             var dings = dispo.SendCommandAsync(command);
 
             mock.Raise(x => x.MessageReceivedEvent += null,
@@ -61,6 +60,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
         [ExpectedException(typeof (TimeoutException))]
         public async void SendCommandAsyncTimeout()
         {
+            
             var dings = dispo.SendCommandAsync(command);
             
             var result = await dings;

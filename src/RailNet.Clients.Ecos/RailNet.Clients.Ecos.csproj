@@ -65,6 +65,8 @@
     <Compile Include="Basic\IBasicClient.cs" />
     <Compile Include="Basic\INachrichtenDispo.cs" />
     <Compile Include="Basic\NachrichtenDispo.cs" />
+    <Compile Include="Extended\Schaltartikel.cs" />
+    <Compile Include="Extended\SchaltartikelManager.cs" />
     <Compile Include="RailClient.cs" />
     <Compile Include="Network\INetworkClient.cs" />
     <Compile Include="Network\NetworkClient.cs" />

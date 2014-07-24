@@ -70,9 +70,9 @@ namespace RailNet.Clients.Ecos.Basic
         }
 
 #if DEBUG
-        private const int timeout = 5;
+        private const int Timeout = 5;
 #else
-        private const int timeout = 2;
+        private const int Timeout = 2;
 #endif
 
        /// <summary>
@@ -88,7 +88,7 @@ namespace RailNet.Clients.Ecos.Basic
 
             var result = incomingMessages
                 .Where(reply => reply.Command == command)
-                .Timeout(TimeSpan.FromSeconds(timeout))
+                .Timeout(TimeSpan.FromSeconds(Timeout))
                 .Take(1)
                 .ToTask();
 
