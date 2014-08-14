@@ -5,7 +5,7 @@ env:
   - EnableNuGetPackageRestore=false
   - Configuration="Release"
  matrix:
-  - MONO_VER="3.4.0"
+  - MONO_VER="3.6.0"
 
 branches:
   only:
