@@ -74,9 +74,11 @@ Target "CompileSample" (fun _ ->
 Target "NUnitTest" (fun _ ->
     !! (testDir + @"/*Tests.dll")
       |> NUnit (fun p ->
-                 {p with
-                   DisableShadowCopy = true;
-                   OutputFile = testDir + @"TestResults.xml"})
+                 {p with                     
+                     ToolPath = if isAppVeyorBuild then "" else findToolFolderInSubPath  "nunit-console.exe" (currentDirectory @@ "tools")
+                     ToolName = if isAppVeyorBuild then "nunit-console" else "nunit-console.exe"
+                     DisableShadowCopy = true
+                     OutputFile = testDir + @"TestResults.xml"})
 )
 
 //Target "FxCop" (fun _ ->
