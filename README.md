@@ -1,4 +1,4 @@
-RailNet [![Build status](https://ci.appveyor.com/api/projects/status/rny0qetlrrqbmvfo)](https://ci.appveyor.com/project/schjan/railnet) [![Build Status](https://travis-ci.org/schjan/RailNet.svg?branch=master)](https://travis-ci.org/schjan/RailNet)
+RailNet [![Build status](https://ci.appveyor.com/api/projects/status/rny0qetlrrqbmvfo/branch/master?svg=true)](https://ci.appveyor.com/project/schjan/railnet/branch/master) [![Build Status](https://travis-ci.org/schjan/RailNet.svg?branch=master)](https://travis-ci.org/schjan/RailNet)
 =======
 
 Modellbahnsteuerungslibrary für ESU ECoS mit .NET 4.5 __async/await__
