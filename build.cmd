@@ -1,11 +1,11 @@
 @echo off
-if not exist packages\FAKE\tools\Fake.exe ( 
-  tools\NuGet.exe install FAKE -OutputDirectory packages -ExcludeVersion
+if not exist tools\FAKE\tools\Fake.exe ( 
+  tools\NuGet.exe install FAKE -OutputDirectory tools -ExcludeVersion
 )
-if not exist packages\SourceLink.Fake\tools\SourceLink.fsx ( 
-  tools\NuGet.exe install SourceLink.Fake -OutputDirectory packages -ExcludeVersion
+if not exist tools\SourceLink.Fake\tools\SourceLink.fsx ( 
+  tools\NuGet.exe install SourceLink.Fake -OutputDirectory tools -ExcludeVersion
 )
-if not exist packages\NUnit.Runners\tools\SourceLink.fsx ( 
-  tools\NuGet.exe install NUnit.Runners -OutputDirectory packages -ExcludeVersion
+if not exist tools\NUnit.Runners\tools\SourceLink.fsx ( 
+  tools\NuGet.exe install NUnit.Runners -OutputDirectory tools -ExcludeVersion
 )
-packages\FAKE\tools\FAKE.exe build.fsx %*
+tools\FAKE\tools\FAKE.exe build.fsx %*
