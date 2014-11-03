@@ -33,7 +33,7 @@ Target "Clean" (fun _ ->
 
 Target "NuGet" (fun _ ->
     RestorePackages()
-    CopyDir "packages" "src/packages" (fun _ -> true)
+    CopyDir "src/packages" "packages" (fun _ -> true)
     CleanDirs [packagesDir]
 )
 
