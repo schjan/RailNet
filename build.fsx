@@ -102,18 +102,11 @@ Target "CreatePackage" (fun _ ->
 
     CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
 
-    let ShouldPublish = isAppVeyorBuild && environVar "nugetkey" <> null &&
-                        (environVar "APPVEYOR_REPO_BRANCH" = "master" || environVar "APPVEYOR_REPO_BRANCH" = "dev")
+    let ShouldPublish = isAppVeyorBuild && environVar "APPVEYOR_REPO_TAG" = "True" && environVar "nugetkey" <> null
     
-    if ShouldPublish then printfn "Me should Publish?: %b" ShouldPublish
+    printfn "Me should Publish?: %b" ShouldPublish
 
-    let version = if ShouldPublish then 
-                    match environVar "APPVEYOR_REPO_BRANCH" with
-                    | "master" -> releaseNotes.NugetVersion
-                    | "dev" -> releaseNotes.AssemblyVersion + "-alpha" + AppVeyorEnvironment.BuildNumber
-                    | _ -> releaseNotes.NugetVersion
-                    else
-                      releaseNotes.NugetVersion          
+    let version = releaseNotes.NugetVersion          
       
     NuGet (fun p -> 
         {p with
@@ -146,12 +139,9 @@ Target "Zip" (fun _ ->
   ==> "NuGet"
   ==> "CompileLib"
   ==> "CompileTest"  
-  //  ==> "FxCop"
   ==> "NUnitTest"
   =?> ("CompileSample", not isLinux) 
   ==> "CreatePackage"
   ==> "Zip"
 
-
-// start build
 RunTargetOrDefault "NUnitTest"
