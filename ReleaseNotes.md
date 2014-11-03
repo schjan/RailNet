@@ -1,3 +1,7 @@
+#### 0.0.4-alpha
+* Benutzt intern ReactiveExtensions und läuft dadurch stabiler.
+* Alle ECoS befehle im BasicClient implementiert.
+
 #### 0.0.3 -
 * Serverside Events implemented in BasicClient
 
