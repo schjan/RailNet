@@ -17,6 +17,7 @@ let deployDir = @"./deploy/"
 let packageDir = @"./package/"
 let sampleDir = @"./sample/"
 let packagesDir = @"./packages/"
+let srcPackagesDir = @"./src/packages/"
 
 let projectName = "RailNet.Clients.EcoS"
 let projectDescription = "An async-based ECoS model railway client for .NET"
@@ -33,7 +34,7 @@ Target "Clean" (fun _ ->
 
 Target "NuGet" (fun _ ->
     RestorePackages()
-    CopyDir "src/packages" "packages" (fun _ -> true)
+    CopyDir srcPackagesDir packagesDir (fun _ -> true)
     CleanDirs [packagesDir]
 )
 
@@ -123,8 +124,8 @@ Target "CreatePackage" (fun _ ->
             AccessKey = environVarOrDefault "nugetkey" ""
 
             Dependencies = 
-                ["NLog", GetPackageVersion packagesDir "NLog"
-                 "Rx-Main", GetPackageVersion packagesDir "Rx-Main"]
+                ["NLog", GetPackageVersion srcPackagesDir "NLog"
+                 "Rx-Main", GetPackageVersion srcPackagesDir "Rx-Main"]
 
             Publish = ShouldPublish }) "RailNet.Clients.Ecos.nuspec"        
 )
