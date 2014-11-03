@@ -17,6 +17,7 @@ let deployDir = @"./deploy/"
 let packageDir = @"./package/"
 let sampleDir = @"./sample/"
 let packagesDir = @"./packages/"
+let srcPackagesDir = @"./src/packages/"
 
 let projectName = "RailNet.Clients.EcoS"
 let projectDescription = "An async-based ECoS model railway client for .NET"
@@ -33,6 +34,8 @@ Target "Clean" (fun _ ->
 
 Target "NuGet" (fun _ ->
     RestorePackages()
+    CopyDir srcPackagesDir packagesDir (fun _ -> true)
+    CleanDirs [packagesDir]
 )
 
 Target "SetVersions" (fun _ ->
@@ -74,9 +77,11 @@ Target "CompileSample" (fun _ ->
 Target "NUnitTest" (fun _ ->
     !! (testDir + @"/*Tests.dll")
       |> NUnit (fun p ->
-                 {p with
-                   DisableShadowCopy = true;
-                   OutputFile = testDir + @"TestResults.xml"})
+                 {p with                     
+                     ToolPath = if isAppVeyorBuild then "" else findToolFolderInSubPath  "nunit-console.exe" (currentDirectory @@ "tools")
+                     ToolName = if isAppVeyorBuild then "nunit-console" else "nunit-console.exe"
+                     DisableShadowCopy = true
+                     OutputFile = testDir + @"TestResults.xml"})
 )
 
 //Target "FxCop" (fun _ ->
@@ -100,18 +105,11 @@ Target "CreatePackage" (fun _ ->
 
     CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
 
-    let ShouldPublish = isAppVeyorBuild && environVar "nugetkey" <> null &&
-                        (environVar "APPVEYOR_REPO_BRANCH" = "master" || environVar "APPVEYOR_REPO_BRANCH" = "dev")
+    let ShouldPublish = isAppVeyorBuild && environVar "APPVEYOR_REPO_TAG" = "True" && environVar "nugetkey" <> null
     
-    if ShouldPublish then printfn "Me should Publish?: %b" ShouldPublish
+    printfn "Me should Publish?: %b" ShouldPublish
 
-    let version = if ShouldPublish then 
-                    match environVar "APPVEYOR_REPO_BRANCH" with
-                    | "master" -> releaseNotes.NugetVersion
-                    | "dev" -> releaseNotes.AssemblyVersion + "-alpha" + AppVeyorEnvironment.BuildNumber
-                    | _ -> releaseNotes.NugetVersion
-                    else
-                      releaseNotes.NugetVersion          
+    let version = releaseNotes.NugetVersion          
       
     NuGet (fun p -> 
         {p with
@@ -126,8 +124,8 @@ Target "CreatePackage" (fun _ ->
             AccessKey = environVarOrDefault "nugetkey" ""
 
             Dependencies = 
-                ["NLog", GetPackageVersion packagesDir "NLog"
-                 "Rx-Main", GetPackageVersion packagesDir "Rx-Main"]
+                ["NLog", GetPackageVersion srcPackagesDir "NLog"
+                 "Rx-Main", GetPackageVersion srcPackagesDir "Rx-Main"]
 
             Publish = ShouldPublish }) "RailNet.Clients.Ecos.nuspec"        
 )
@@ -144,12 +142,9 @@ Target "Zip" (fun _ ->
   ==> "NuGet"
   ==> "CompileLib"
   ==> "CompileTest"  
-  //  ==> "FxCop"
   ==> "NUnitTest"
   =?> ("CompileSample", not isLinux) 
   ==> "CreatePackage"
   ==> "Zip"
 
-
-// start build
 RunTargetOrDefault "NUnitTest"

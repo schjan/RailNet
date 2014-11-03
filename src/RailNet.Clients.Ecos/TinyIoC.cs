@@ -12,7 +12,7 @@
 // LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
 // FITNESS FOR A PARTICULAR PURPOSE.
 //===============================================================================
-
+#pragma warning disable 1591
 #region Preprocessor Directives
 // Uncomment this line if you want the container to automatically
 // register the TinyMessenger messenger/event aggregator
@@ -3686,3 +3686,4 @@ namespace System.Reflection
     }
 }
 #endif
+#pragma warning restore 1591

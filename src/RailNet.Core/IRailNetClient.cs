@@ -2,5 +2,8 @@
 {
     public interface IRailNetClient
     {
+        bool Connected { get; }
+
+        void Disconnect();
     }
 }

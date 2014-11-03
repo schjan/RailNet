@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NLog;
 using RailNet.Clients.Ecos;
+using RailNet.Clients.Ecos.Basic;
+using RailNet.Core;
 
 namespace RailNet.Signalsteuerung.WF
 {
