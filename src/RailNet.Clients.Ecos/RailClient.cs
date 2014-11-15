@@ -15,7 +15,6 @@ using RailNet.Clients.Ecos.Extended;
 using RailNet.Clients.Ecos.Network;
 using RailNet.Core;
 using RailNet.Core.Extended;
-using TinyIoC;
 
 namespace RailNet.Clients.Ecos
 {
@@ -25,17 +24,18 @@ namespace RailNet.Clients.Ecos
     /// </summary>
     public class RailClient : RailNetClientBase, INotifyPropertyChanged
     {
-        private readonly TinyIoCContainer container;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private INetworkClient NetworkClient
+        private INetworkClient _networkClient;
+        protected INetworkClient NetworkClient
         {
-            get { return container.Resolve<INetworkClient>(); }
+            get { return _networkClient; }
         }
 
-        private INachrichtenDispo NachrichtenDispo
+        private INachrichtenDispo _nachrichtenDispo;
+        protected INachrichtenDispo NachrichtenDispo
         {
-            get { return container.Resolve<INachrichtenDispo>(); }
+            get { return _nachrichtenDispo; }
         }
 
         private ISchaltartikelManager _schaltartikel;
@@ -52,18 +52,19 @@ namespace RailNet.Clients.Ecos
         {
             get
             {
-                if (container.CanResolve<INetworkClient>())
+                if (NetworkClient != null)
                     return NetworkClient.Connected;
                 return false;
             }
         }
 
+        private IBasicClient _basicClient;
         /// <summary>
         /// <see cref="IBasicClient"/>
         /// </summary>
         public IBasicClient BasicClient
         {
-            get { return container.Resolve<IBasicClient>(); }
+            get { return _basicClient; }
         }
 
         /// <summary>
@@ -130,23 +131,20 @@ namespace RailNet.Clients.Ecos
 
         public RailClient()
         {
-            container = TinyIoCContainer.Current;
-
             SetUpIoC();
             SetUpComponents();
         }
 
         private void SetUpIoC()
         {
-            container.Register<INetworkClient, NetworkClient>();
-            container.Register<INachrichtenDispo, NachrichtenDispo>();
-            container.Register<IBasicClient, BasicClient>();
-            container.Register<IRailNetClient, RailClient>();
+            _networkClient = new NetworkClient();
+            _nachrichtenDispo = new NachrichtenDispo(_networkClient);
+            _basicClient = new BasicClient(NachrichtenDispo);
         }
 
         private void SetUpComponents()
         {
-            Schaltartikel = new SchaltartikelManager(container);
+            Schaltartikel = new SchaltartikelManager(BasicClient);
         }
 
         private RailStatus _status;

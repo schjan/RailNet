@@ -6,19 +6,16 @@ using System.Threading.Tasks;
 using RailNet.Clients.Ecos.Basic;
 using RailNet.Core;
 using RailNet.Core.Extended;
-using TinyIoC;
 
 namespace RailNet.Clients.Ecos.Extended
 {
     public class SchaltartikelManager : ISchaltartikelManager
     {
-        private readonly TinyIoCContainer _container;
         private readonly IBasicClient _basicClient;
 
-        public SchaltartikelManager(TinyIoCContainer container)
+        public SchaltartikelManager(IBasicClient basicClient)
         {
-            _container = container;
-            _basicClient = container.Resolve<IBasicClient>();
+            _basicClient = basicClient;
         }
 
         /// <summary>
