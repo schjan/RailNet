@@ -1,3 +1,6 @@
+#### 0.0.4-alpha2
+* TinyIoC aus Lib entfernt.
+
 #### 0.0.4-alpha
 * Benutzt intern ReactiveExtensions und läuft dadurch stabiler.
 * Alle ECoS befehle im BasicClient implementiert.

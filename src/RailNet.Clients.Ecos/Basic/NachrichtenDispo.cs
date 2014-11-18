@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using RailNet.Clients.Ecos.Network;
-using TinyIoC;
 
 namespace RailNet.Clients.Ecos.Basic
 {
@@ -36,15 +35,6 @@ namespace RailNet.Clients.Ecos.Basic
         public IObservable<BasicEvent> IncomingEvents
         {
             get { return incomingEvents; }
-        }
-
-        /// <summary>
-        /// Default constructor gets the INetworkClient from IoC
-        /// </summary>
-        public NachrichtenDispo()
-            : this(TinyIoCContainer.Current.Resolve<INetworkClient>())
-        {
-            
         }
 
         public NachrichtenDispo(INetworkClient networkClient)

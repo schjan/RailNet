@@ -4,7 +4,6 @@ using NUnit.Framework;
 using RailNet.Clients.Ecos.Basic;
 using RailNet.Clients.Ecos.Extended;
 using RailNet.Core;
-using TinyIoC;
 
 namespace RailNet.Clients.Ecos.Tests.Extended
 {
@@ -12,7 +11,6 @@ namespace RailNet.Clients.Ecos.Tests.Extended
     public class SchaltartikelManagerTests
     {
         private SchaltartikelManager subject;
-        TinyIoCContainer container = new TinyIoCContainer();
         private Mock<IBasicClient> clientMock;
 
 
@@ -20,8 +18,7 @@ namespace RailNet.Clients.Ecos.Tests.Extended
         public void SetUp()
         {
             clientMock = new Mock<IBasicClient>();
-            container.Register<IBasicClient>(clientMock.Object);
-            subject = new SchaltartikelManager(container);
+            subject = new SchaltartikelManager(clientMock.Object);
         }
 
         [Test]
