@@ -6,5 +6,11 @@ env:
 
 solution: src/RailNet.sln
 
+before_script:
+- chmod +x build.sh
+
+install:
+- cd
+
 script:
  - ./build.sh nunittest
