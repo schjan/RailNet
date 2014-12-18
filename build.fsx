@@ -23,7 +23,7 @@ let projectName = "RailNet.Clients.EcoS"
 let projectDescription = "An async-based ECoS model railway client for .NET"
 let projectSummary = projectDescription
 
-let releaseNotes = 
+let releaseNotes =
     ReadFile "ReleaseNotes.md"
     |> ReleaseNotesHelper.parseReleaseNotes
 
@@ -33,9 +33,10 @@ Target "Clean" (fun _ ->
 )
 
 Target "NuGet" (fun _ ->
-    RestorePackages()
-    CopyDir srcPackagesDir packagesDir (fun _ -> true)
-    CleanDirs [packagesDir]
+  !! "./**/packages.config"
+  |> Seq.iter (RestorePackage (fun p ->
+    { p with
+      OutputPath = srcPackagesDir }))
 )
 
 Target "SetVersions" (fun _ ->
@@ -77,7 +78,7 @@ Target "CompileSample" (fun _ ->
 Target "NUnitTest" (fun _ ->
     !! (testDir + @"/*Tests.dll")
       |> NUnit (fun p ->
-                 {p with                     
+                 {p with
                      ToolPath = if isAppVeyorBuild then "" else findToolFolderInSubPath  "nunit-console.exe" (currentDirectory @@ "tools")
                      ToolName = if isAppVeyorBuild then "nunit-console" else "nunit-console.exe"
                      DisableShadowCopy = true
@@ -106,12 +107,12 @@ Target "CreatePackage" (fun _ ->
     CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
 
     let ShouldPublish = isAppVeyorBuild && environVar "APPVEYOR_REPO_TAG" = "True" && environVar "nugetkey" <> null
-    
+
     printfn "Me should Publish?: %b" ShouldPublish
 
-    let version = releaseNotes.NugetVersion          
-      
-    NuGet (fun p -> 
+    let version = releaseNotes.NugetVersion
+
+    NuGet (fun p ->
         {p with
             Authors = ["Jannis Schaefer"]
             Project = projectName
@@ -123,11 +124,11 @@ Target "CreatePackage" (fun _ ->
             ReleaseNotes = toLines releaseNotes.Notes
             AccessKey = environVarOrDefault "nugetkey" ""
 
-            Dependencies = 
+            Dependencies =
                 ["NLog", GetPackageVersion srcPackagesDir "NLog"
                  "Rx-Main", GetPackageVersion srcPackagesDir "Rx-Main"]
 
-            Publish = ShouldPublish }) "RailNet.Clients.Ecos.nuspec"        
+            Publish = ShouldPublish }) "RailNet.Clients.Ecos.nuspec"
 )
 
 Target "Zip" (fun _ ->
@@ -141,9 +142,9 @@ Target "Zip" (fun _ ->
   ==> "SetVersions"
   ==> "NuGet"
   ==> "CompileLib"
-  ==> "CompileTest"  
+  ==> "CompileTest"
   ==> "NUnitTest"
-  =?> ("CompileSample", not isLinux) 
+  =?> ("CompileSample", not isLinux)
   ==> "CreatePackage"
   ==> "Zip"
 

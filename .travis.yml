@@ -6,11 +6,16 @@ env:
 
 solution: src/RailNet.sln
 
-before_script:
-- chmod +x build.sh
+cache:
+ directories:
+  - "src/packages"
+  - "tools"
 
 install:
 - ls
+
+before_script:
+- chmod +x build.sh
 
 script:
  - ./build.sh nunittest
