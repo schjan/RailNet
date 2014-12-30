@@ -17,7 +17,7 @@ let deployDir = @"./deploy/"
 let packageDir = @"./package/"
 let sampleDir = @"./sample/"
 let packagesDir = @"./packages/"
-let srcPackagesDir = @"./src/packages/"
+let srcPackagesDir = @"./src/packages"
 
 let projectName = "RailNet.Clients.EcoS"
 let projectDescription = "An async-based ECoS model railway client for .NET"
