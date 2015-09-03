@@ -70,13 +70,13 @@ Target "SetVersions" (fun _ ->
 
         traceImportant("Build Version is " + semVer)
 
-        //if isAppVeyorBuild then
-        //    let res = ExecProcess(fun proc -> proc.FileName <- "appveyor"
-        //                                      proc.Arguments <- "UpdateBuild -Version \"" + semVer + "\"")
-        //                            (System.TimeSpan.FromSeconds 10.0)
-        //    if res <> 0 then failwithf "Error during sending things to AppVeyor"
+        if isAppVeyorBuild then
+            let res = ExecProcess(fun proc -> proc.FileName <- "appveyor"
+                                              proc.Arguments <- "UpdateBuild -Version \"" + semVer + "\"")
+                                    (System.TimeSpan.FromMinutes 2.0)
+            if res <> 0 then failwithf "Error during sending things to AppVeyor"
 
-        //else
+        else
         version <- environVarOrDefault "BUILD_NUMBER" ""
         nugetVersion <- environVarOrDefault "semver.nuget" ""
 
@@ -143,8 +143,6 @@ Target "CreatePackage" (fun _ ->
 
     printfn "Me should Publish?: %b" ShouldPublish
 
-    let version = releaseNotes.NugetVersion
-
     NuGet (fun p ->
         {p with
             Authors = ["Jannis Schaefer"]
@@ -153,7 +151,7 @@ Target "CreatePackage" (fun _ ->
             OutputPath = deployDir
             Summary = projectSummary
             WorkingDir = packageDir
-            Version = version
+            Version = nugetVersion
             ReleaseNotes = toLines releaseNotes.Notes
             AccessKey = environVarOrDefault "nugetkey" ""
 
