@@ -72,7 +72,7 @@ Target "SetVersions" (fun _ ->
 
         if isAppVeyorBuild then
             let res = ExecProcess(fun proc -> proc.FileName <- "appveyor"
-                                              proc.Arguments <- "-Version \"" + semVer + "\"")
+                                              proc.Arguments <- "UpdateBuild -Version \"" + semVer + "\"")
                                     (System.TimeSpan.FromSeconds 10.0)
             if res <> 0 then failwithf "Error during sending things to AppVeyor"
 
