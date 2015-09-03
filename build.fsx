@@ -1,12 +1,15 @@
 // include Fake lib
-#I @"packages/FAKE/tools/"
+#I @"tools/FAKE/tools/"
 #r @"FakeLib.dll"
+#r @"tools/FSharp.Data/lib/net40/FSharp.Data.dll"
 
 open System
 open Fake
 open Fake.AssemblyInfoFile
 open Fake.Git
 open Fake.AppVeyor
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 
 let isAppVeyorBuild = environVar "APPVEYOR" <> null
 
@@ -23,6 +26,10 @@ let projectName = "RailNet.Clients.EcoS"
 let projectDescription = "An async-based ECoS model railway client for .NET"
 let projectSummary = projectDescription
 
+let mutable version = "0"  // or retrieve from CI server
+let mutable semVer =  "0"
+let mutable nugetVersion = "0.0.0.1-alphadev"
+
 let releaseNotes =
     ReadFile "ReleaseNotes.md"
     |> ReleaseNotesHelper.parseReleaseNotes
@@ -36,25 +43,61 @@ Target "NuGet" (fun _ ->
   !! "./**/packages.config"
   |> Seq.iter (RestorePackage (fun p ->
     { p with
-      OutputPath = srcPackagesDir }))
+        OutputPath = srcPackagesDir }))
 )
 
 Target "SetVersions" (fun _ ->
-    CreateCSharpAssemblyInfo "./src/RailNet.Clients.Ecos/Properties/AssemblyInfo.cs"
-        [Attribute.Title "RailNet.Clients.Ecos"
-         Attribute.Description projectDescription
-         Attribute.Product projectName
-         Attribute.Version releaseNotes.AssemblyVersion
-         Attribute.Guid "17abf373-a1b5-41d4-8859-89e2b279a0b5"
-         Attribute.FileVersion releaseNotes.AssemblyVersion]
+    let mutable assemblyVersion = "";
+    let mutable assemblyFileVersion = "";
+    let mutable assemblyInformationalVersion = "";
 
-    CreateCSharpAssemblyInfo "./src/RailNet.Core/Properties/AssemblyInfo.cs"
-        [Attribute.Title "RailNet.Core"
-         Attribute.Description projectDescription
-         Attribute.Product projectName
-         Attribute.Version releaseNotes.AssemblyVersion
-         Attribute.FileVersion releaseNotes.AssemblyVersion
-         Attribute.Guid "48353882-6320-403e-8c2e-820288731ad0"]
+    if(buildServer <> TeamCity && not isLinux) then
+        let result = 
+            ExecProcessAndReturnMessages(fun info -> info.FileName <- "tools/GitVersion.CommandLine/tools/GitVersion.exe"
+                                                     info.Arguments <- "/output json")
+                                            (System.TimeSpan.FromSeconds 10.0)
+        if result.Messages.Count = 0 then failwithf "Error during sign call"
+        
+        let json = JsonValue.Parse(String.concat "\r\n" result.Messages)
+
+        assemblyVersion <- json?AssemblySemVer.AsString()
+        assemblyFileVersion <- json?SemVer.AsString()
+        assemblyInformationalVersion <- json?InformationalVersion.AsString()
+        nugetVersion <- json?NuGetVersion.AsString()        
+        semVer <- json?FullSemVer.AsString()  
+              
+        version <- assemblyFileVersion
+
+        traceImportant("Build Version is " + semVer)
+
+        if isAppVeyorBuild then
+            let res = ExecProcess(fun proc -> proc.FileName <- "appveyor"
+                                              proc.Arguments <- "-Version \"" + semVer + "\"")
+                                    (System.TimeSpan.FromSeconds 10.0)
+            if res <> 0 then failwithf "Error during sending things to AppVeyor"
+
+        else
+            version <- environVarOrDefault "BUILD_NUMBER" ""
+            nugetVersion <- environVarOrDefault "semver.nuget" ""
+
+
+        CreateCSharpAssemblyInfo "./src/RailNet.Clients.Ecos/Properties/AssemblyInfo.cs"
+           [Attribute.Title "RailNet.Clients.Ecos"
+            Attribute.Description projectDescription
+            Attribute.Product projectName
+            Attribute.Version assemblyVersion
+            Attribute.FileVersion assemblyFileVersion
+            Attribute.InformationalVersion assemblyInformationalVersion
+            Attribute.Guid "17abf373-a1b5-41d4-8859-89e2b279a0b5"]
+
+        CreateCSharpAssemblyInfo "./src/RailNet.Core/Properties/AssemblyInfo.cs"
+           [Attribute.Title "RailNet.Core"
+            Attribute.Description projectDescription
+            Attribute.Product projectName
+            Attribute.Version assemblyVersion
+            Attribute.FileVersion assemblyFileVersion
+            Attribute.InformationalVersion assemblyInformationalVersion
+            Attribute.Guid "48353882-6320-403e-8c2e-820288731ad0"]
 )
 
 Target "CompileLib" (fun _ ->
@@ -77,23 +120,13 @@ Target "CompileSample" (fun _ ->
 
 Target "NUnitTest" (fun _ ->
     !! (testDir + @"/*Tests.dll")
-      |> NUnit (fun p ->
+      |> Fake.NUnitSequential.NUnit (fun p ->
                  {p with
                      ToolPath = if isAppVeyorBuild then "" else findToolFolderInSubPath  "nunit-console.exe" (currentDirectory @@ "tools")
                      ToolName = if isAppVeyorBuild then "nunit-console" else "nunit-console.exe"
                      DisableShadowCopy = true
                      OutputFile = testDir + @"TestResults.xml"})
 )
-
-//Target "FxCop" (fun _ ->
-//    !+ (buildDir + @"/**/*.dll")
-//      ++ (buildDir + @"/**/*.exe")
-//        |> Scan
-//        |> FxCop (fun p ->
-//            {p with
-//                ReportFileName = testDir + "FXCopResults.xml";
-//                ToolPath = fxCopRoot})
-//)
 
 Target "CreatePackage" (fun _ ->
     let net45Dir = packageDir @@ "lib/net45/"
