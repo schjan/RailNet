@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitleAttribute("RailNet.Core")]
 [assembly: AssemblyDescriptionAttribute("An async-based ECoS model railway client for .NET")]
 [assembly: AssemblyProductAttribute("RailNet.Clients.EcoS")]
-[assembly: AssemblyVersionAttribute("0.0.3")]
-[assembly: AssemblyFileVersionAttribute("0.0.3")]
+[assembly: AssemblyVersionAttribute("0.1.0.0")]
+[assembly: AssemblyFileVersionAttribute("0.1.0")]
 [assembly: GuidAttribute("48353882-6320-403e-8c2e-820288731ad0")]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string Version = "0.0.3";
+        internal const string Version = "0.1.0.0";
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{D7D2F7BD-3E2B-4357-BB53-42E9D0888E54}"
 EndProject
@@ -14,13 +14,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Core.Tests", "Tests\RailNet.Core.Tests\RailNet.Core.Tests.csproj", "{3DEABBFB-0FB1-471D-ACB7-2038C29F2431}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailNet.Clients.Ecos.Tests", "Tests\RailNet.Clients.Ecos.Tests\RailNet.Clients.Ecos.Tests.csproj", "{D1EF21E1-A3F5-4C72-B968-04FA606EE651}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C161A543-43A1-44BF-8533-4F613D3F0D0C}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3E51F666-FF7C-4E42-A7FA-9A26D31B4F60}"
 EndProject

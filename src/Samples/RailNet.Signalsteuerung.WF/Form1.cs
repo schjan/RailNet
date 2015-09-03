@@ -17,6 +17,7 @@ namespace RailNet.Signalsteuerung.WF
     public partial class Form1 : Form
     {
         private RailClient rc;
+        private ILogger logger = LogManager.GetCurrentClassLogger();
 
         public Form1()
         {
@@ -46,6 +47,7 @@ namespace RailNet.Signalsteuerung.WF
 
         private async void btnConnect_Click(object sender, EventArgs e)
         {
+            logger.Debug(string.Format("Connecting to {0}", txtHostname.Text));
             btnConnect.Enabled = false;
             txtHostname.Enabled = false;
 
