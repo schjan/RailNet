@@ -46,10 +46,10 @@ namespace RailNet.Clients.Ecos.Basic
 
         internal void ExtractError()
         {
-            string footer = Content.Last();
+            var footer = Content.Last();
 
             if (!footer.StartsWith("<END "))
-                throw new InvalidDataException("No valid End found.");
+                throw new InvalidDataException("No valid End-Tag found.");
 
             footer = footer.Substring(5, footer.Length - 6);
 

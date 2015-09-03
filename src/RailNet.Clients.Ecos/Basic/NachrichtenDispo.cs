@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using RailNet.Clients.Ecos.Network;
@@ -23,26 +18,23 @@ namespace RailNet.Clients.Ecos.Basic
     /// </summary>
     public class NachrichtenDispo : INachrichtenDispo
     {
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly INetworkClient _networkClient;
 
-        private readonly IObservable<BasicResponse> incomingMessages;
-        private readonly IObservable<BasicEvent> incomingEvents;
+        private readonly IObservable<BasicResponse> _incomingMessages;
+        private readonly IObservable<BasicEvent> _incomingEvents;
 
         /// <summary>
         /// Eine IObservable von Serverseitigen Events
         /// </summary>
-        public IObservable<BasicEvent> IncomingEvents
-        {
-            get { return incomingEvents; }
-        }
+        public IObservable<BasicEvent> IncomingEvents => _incomingEvents;
 
         public NachrichtenDispo(INetworkClient networkClient)
         {
             _networkClient = networkClient;
 
             // Rx :)
-            incomingMessages = Observable.FromEventPattern<MessageReceivedEventHandler, MessageReceivedEventArgs>(
+            _incomingMessages = Observable.FromEventPattern<MessageReceivedEventHandler, MessageReceivedEventArgs>(
                 h => _networkClient.MessageReceivedEvent += h,
                 h => _networkClient.MessageReceivedEvent -= h)
                 .Select(x => x.EventArgs.Content)
@@ -50,7 +42,7 @@ namespace RailNet.Clients.Ecos.Basic
                 .Where(x => GetMessageType(x) == MessageType.Reply)
                 .Select(ParseResponse);
 
-            incomingEvents = Observable.FromEventPattern<MessageReceivedEventHandler, MessageReceivedEventArgs>(
+            _incomingEvents = Observable.FromEventPattern<MessageReceivedEventHandler, MessageReceivedEventArgs>(
                 h => _networkClient.MessageReceivedEvent += h,
                 h => _networkClient.MessageReceivedEvent -= h)
                 .Select(x => x.EventArgs.Content)
@@ -76,7 +68,7 @@ namespace RailNet.Clients.Ecos.Basic
             if (!_networkClient.Connected)
                 throw new IOException("Client nicht verbunden!");
 
-            var result = incomingMessages
+            var result = _incomingMessages
                 .Where(reply => reply.Command == command)
                 .Timeout(TimeSpan.FromSeconds(Timeout))
                 .Take(1)
@@ -87,7 +79,7 @@ namespace RailNet.Clients.Ecos.Basic
             return result;
         }
 
-        private BasicResponse ParseResponse(string[] message)
+        private static BasicResponse ParseResponse(string[] message)
         {
             var response = new BasicResponse(message);
             
@@ -96,7 +88,7 @@ namespace RailNet.Clients.Ecos.Basic
             return response;
         }
 
-        private BasicEvent ParseEvent(string[] message)
+        private static BasicEvent ParseEvent(string[] message)
         {
             var Event = new BasicEvent(message);
 
@@ -106,27 +98,19 @@ namespace RailNet.Clients.Ecos.Basic
         }
 
         // TODO: Mehr Validation noetig?
-        private bool ValidateMessage(string[] message)
+        private static bool ValidateMessage(string[] message)
         {
             return HasBeginAndEnd(message);
         }
         
-        private bool HasBeginAndEnd(string[] message)
+        private static bool HasBeginAndEnd(IReadOnlyList<string> message)
         {
-            bool isValid = true;
-            
-            if (!message[0].StartsWith("<") || !message[0].EndsWith(">"))
-                isValid = false;
-
-            if (!message.Last().StartsWith("<END"))
-                isValid = false;
-
-            return isValid;
+            return message[0].StartsWith("<") && message[0].EndsWith(">") && message.Last().StartsWith("<END");
         }
 
-        private MessageType GetMessageType(string[] message)
+        private static MessageType GetMessageType(IReadOnlyList<string> message)
         {
-            if (message.Length < 2)
+            if (message.Count < 2)
                 return MessageType.Undefined;
 
             if (message[0].StartsWith("<REPLY "))

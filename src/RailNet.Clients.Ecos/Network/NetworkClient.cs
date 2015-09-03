@@ -23,8 +23,9 @@ namespace RailNet.Clients.Ecos.Network
         private volatile ConcurrentBag<string> _messageList;
 
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
-        
+
         private int _messageDelay = 100;
+
         /// <summary>
         /// Delay in ms between to messages (100 is default)
         /// </summary>
@@ -75,10 +76,7 @@ namespace RailNet.Clients.Ecos.Network
         /// <summary>
         /// Value if Client is Connected to ECoS
         /// </summary>
-        public bool Connected
-        {
-            get { return _tcpClient != null && _tcpClient.Connected; }
-        }
+        public bool Connected => _tcpClient != null && _tcpClient.Connected;
 
         /// <summary>
         /// Connects async to ECoS
@@ -109,7 +107,7 @@ namespace RailNet.Clients.Ecos.Network
             }
             catch (SocketException ex)
             {
-                logger.ErrorException("Could not connect to " + host + ":" + port, ex);
+                logger.Error($"Could not connect to {host}:{port}", ex);
                 return ex.SocketErrorCode;
             }
 
@@ -121,17 +119,18 @@ namespace RailNet.Clients.Ecos.Network
             _readerThread.Start();
             _sendThread.Start();
 
-            logger.Debug("Connected to {0}:{1}", host, port);
+            logger.Debug($"Connected to {host}:{port}");
 
             return SocketError.Success;
         }
 
 
         private IList<string> result;
+
         private async Task ListenAsync()
         {
             var message = await _tcpReader.ReadLineAsync();
-            
+
             result.Add(message);
             if (message.StartsWith("<END"))
                 FlushMessage();
@@ -230,9 +229,7 @@ namespace RailNet.Clients.Ecos.Network
 
         protected void RaiseMessageReceivedEvent(string[] content)
         {
-            if (MessageReceivedEvent != null)
-                MessageReceivedEvent(this, new MessageReceivedEventArgs(content));
+            MessageReceivedEvent?.Invoke(this, new MessageReceivedEventArgs(content));
         }
-
     }
 }

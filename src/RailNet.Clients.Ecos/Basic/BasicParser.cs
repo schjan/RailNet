@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RailNet.Clients.Ecos.Basic
 {
-    class BasicParser
+    internal class BasicParser
     {
         internal static IEnumerable<string[]> ParseContent(string[] content)
         {
