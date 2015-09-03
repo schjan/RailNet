@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProductAttribute("RailNet.Clients.EcoS")]
 [assembly: AssemblyVersionAttribute("0.1.0.0")]
 [assembly: AssemblyFileVersionAttribute("0.1.0")]
-[assembly: AssemblyInformationalVersionAttribute("0.1.0-buildscript.1+136.Branch.feature/buildscript.Sha.2560f8035b878980ced1cb7e17ef8e096ac4f80b")]
 [assembly: GuidAttribute("48353882-6320-403e-8c2e-820288731ad0")]
 namespace System {
     internal static class AssemblyVersionInformation {
