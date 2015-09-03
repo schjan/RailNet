@@ -76,9 +76,9 @@ Target "SetVersions" (fun _ ->
         //                            (System.TimeSpan.FromSeconds 10.0)
         //    if res <> 0 then failwithf "Error during sending things to AppVeyor"
 
-        else
-            version <- environVarOrDefault "BUILD_NUMBER" ""
-            nugetVersion <- environVarOrDefault "semver.nuget" ""
+        //else
+        version <- environVarOrDefault "BUILD_NUMBER" ""
+        nugetVersion <- environVarOrDefault "semver.nuget" ""
 
 
         CreateCSharpAssemblyInfo "./src/RailNet.Clients.Ecos/Properties/AssemblyInfo.cs"
