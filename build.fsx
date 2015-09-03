@@ -70,11 +70,11 @@ Target "SetVersions" (fun _ ->
 
         traceImportant("Build Version is " + semVer)
 
-        if isAppVeyorBuild then
-            let res = ExecProcess(fun proc -> proc.FileName <- "appveyor"
-                                              proc.Arguments <- "UpdateBuild -Version \"" + semVer + "\"")
-                                    (System.TimeSpan.FromSeconds 10.0)
-            if res <> 0 then failwithf "Error during sending things to AppVeyor"
+        //if isAppVeyorBuild then
+        //    let res = ExecProcess(fun proc -> proc.FileName <- "appveyor"
+        //                                      proc.Arguments <- "UpdateBuild -Version \"" + semVer + "\"")
+        //                            (System.TimeSpan.FromSeconds 10.0)
+        //    if res <> 0 then failwithf "Error during sending things to AppVeyor"
 
         else
             version <- environVarOrDefault "BUILD_NUMBER" ""
