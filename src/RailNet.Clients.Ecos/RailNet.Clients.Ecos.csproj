@@ -62,12 +62,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic\BasicEvent.cs" />
+    <Compile Include="Basic\BasicMessage.cs" />
     <Compile Include="Basic\BasicParser.cs" />
     <Compile Include="Basic\BasicResponse.cs" />
     <Compile Include="Basic\BasicClient.cs" />
+    <Compile Include="Basic\BefehlStrings.cs" />
+    <Compile Include="Basic\Funktionen.cs" />
     <Compile Include="Basic\IBasicClient.cs" />
     <Compile Include="Basic\INachrichtenDispo.cs" />
     <Compile Include="Basic\NachrichtenDispo.cs" />
+    <Compile Include="Basic\StaticIds.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Extended\RueckmeldeModul.cs" />
+    <Compile Include="Extended\RueckmeldeManager.cs" />
+    <Compile Include="Extended\Rueckmelder.cs" />
     <Compile Include="Extended\Schaltartikel.cs" />
     <Compile Include="Extended\SchaltartikelManager.cs" />
     <Compile Include="RailClient.cs" />

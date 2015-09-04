@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using NLog;
+using RailNet.Clients.Ecos.Basic;
+using static RailNet.Clients.Ecos.Basic.BefehlStrings;
+
+namespace RailNet.Clients.Ecos.Extended
+{
+    public class RueckmeldeManager
+    {
+        private readonly IBasicClient _basicClient;
+        private readonly ILogger _logger;
+        internal readonly Dictionary<int, RueckmeldeModul> Module;
+
+        public RueckmeldeManager(IBasicClient basicClient)
+        {
+            _logger = LogManager.GetCurrentClassLogger();
+
+            Module = new Dictionary<int, RueckmeldeModul>();
+
+            _basicClient = basicClient;
+        }
+
+        public async Task SubscribeAll()
+        {
+            var response = await _basicClient.QueryObjects(StaticIds.FeedbackManager);
+
+            if (response.HasError)
+                throw new InvalidDataReceivedException("Fehler beim Abrufen der Rückmeldemodule");
+
+            foreach (var id in response.Content.Select(mod => Convert.ToInt32(mod)))
+            {
+                var getPortResponse = await _basicClient.Get(id, PortsS);
+                var reqresponse = await _basicClient.Request(id, ViewS);
+
+                if (reqresponse.HasError || getPortResponse.HasError)
+                    _logger.Error($"Konnte nicht mit Rückmelder {id} verbinden");
+                else
+                {
+                    var ports =
+                        Convert.ToInt32(BasicParser.TryGetParameterFromContent("ports", getPortResponse.Content[0]));
+
+                    Module.Add(id, new RueckmeldeModul {Id = id, Ports = ports});
+                }
+            }
+        }
+
+        public async Task UnsubscribeAll()
+        {
+            var messages =
+                Module.Select(rueckmeldeModul => _basicClient.Release(rueckmeldeModul.Key, ViewS)).Cast<Task>().ToList();
+
+            await Task.WhenAll(messages);
+            
+            Module.Clear();
+        }
+    }
+}

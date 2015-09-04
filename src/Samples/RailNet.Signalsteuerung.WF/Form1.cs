@@ -47,7 +47,7 @@ namespace RailNet.Signalsteuerung.WF
 
         private async void btnConnect_Click(object sender, EventArgs e)
         {
-            logger.Debug(string.Format("Connecting to {0}", txtHostname.Text));
+            logger.Debug($"Connecting to {txtHostname.Text}");
             btnConnect.Enabled = false;
             txtHostname.Enabled = false;
 

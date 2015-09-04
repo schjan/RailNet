@@ -178,9 +178,9 @@ namespace RailNet.Clients.Ecos.Basic
                 }
 
             if (append)
-                b.Append(", append");
-
-            b.Append(')');
+                b.Append(", append)");
+            else
+                b.Append(')');
 
             return _dispo.SendCommandAsync(b.ToString());
         }

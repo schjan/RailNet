@@ -1,0 +1,42 @@
+﻿namespace RailNet.Clients.Ecos.Basic
+{
+    public enum Funktionen : short
+    {
+        Undef = 0,
+        Function = 2,
+        Light = 3,
+        Light0 = 4,
+        Light1 = 5,
+        Sound = 7,
+        Music = 8,
+        Announce = 9,
+        RoutingSpeed = 10,
+        Abv = 11,
+        Coupler = 32,
+        Steam = 33,
+        Panto = 34,
+        Highbeam = 35,
+        Bell = 36,
+        Horn = 37,
+        Whistle = 38,
+        DoorSound = 39,
+        Fan = 40,
+        ShovelWorkSound = 42,
+        Shift = 44,
+        InteriorLighting = 260,
+        PlateLight = 261,
+        Brakesound = 263,
+        CraneRaiseLower = 299,
+        HookUpDown = 555,
+        WheelLight = 773,
+        Turn = 811,
+        SteamBlow = 1031,
+        RadioSound = 1033,
+        CouplerSound = 1287,
+        TrackSound = 1543,
+        NotchUp = 1607,
+        NotchDown = 1608,
+        ThundererWhistle = 2055,
+        BufferSound = 3847
+    }
+}

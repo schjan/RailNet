@@ -81,20 +81,12 @@ namespace RailNet.Clients.Ecos.Basic
 
         private static BasicResponse ParseResponse(string[] message)
         {
-            var response = new BasicResponse(message);
-            
-            response.ExtractError();
-
-            return response;
+            return new BasicResponse(message);
         }
 
         private static BasicEvent ParseEvent(string[] message)
         {
-            var Event = new BasicEvent(message);
-
-            Event.ExtractError();
-
-            return Event;
+            return new BasicEvent(message);
         }
 
         // TODO: Mehr Validation noetig?
