@@ -8,6 +8,6 @@ namespace RailNet.Clients.Ecos.Extended
 {
     public class Rueckmelder
     {
-        bool Belegt { get; set; }
+        public bool Belegt { get; set; }
     }
 }

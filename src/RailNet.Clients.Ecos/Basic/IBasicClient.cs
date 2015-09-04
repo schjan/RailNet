@@ -100,6 +100,11 @@ namespace RailNet.Clients.Ecos.Basic
         /// EventReceivedEvents wird ausgeführt, wenn ein Serverseitiges Event empfangen wurde.
         /// </summary>
         event EventReceivedHandler EventReceived;
+
+        /// <summary>
+        /// EventStream
+        /// </summary>
+        IObservable<BasicEvent> EventObservable { get; }
     }
 
     public delegate void EventReceivedHandler(object sender, EventReceivedArgs e);

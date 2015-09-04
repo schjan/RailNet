@@ -13,6 +13,8 @@ namespace RailNet.Clients.Ecos.Basic
         {
             _dispo = dispo;
             _dispo.IncomingEvents.Subscribe(RaiseEventReceived);
+
+            EventObservable = _dispo.IncomingEvents;
         }
 
         /// <summary>
@@ -240,6 +242,8 @@ namespace RailNet.Clients.Ecos.Basic
         /// EventReceivedEvents wird ausgeführt, wenn ein Serverseitiges Event empfangen wurde.
         /// </summary>
         public event EventReceivedHandler EventReceived;
+        
+        public IObservable<BasicEvent> EventObservable { get; }
 
         /// <summary>
         /// Raises a BasicEvent
