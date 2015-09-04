@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using RailNet.Clients.Ecos.Basic;
 using RailNet.Clients.Ecos.Extended;
+using RailNet.Clients.Ecos.Extended.Lok;
+using RailNet.Clients.Ecos.Extended.Rueckmeldung;
 using RailNet.Clients.Ecos.Network;
 using RailNet.Core;
 using RailNet.Core.Extended;
@@ -30,6 +28,9 @@ namespace RailNet.Clients.Ecos
 
         protected INachrichtenDispo NachrichtenDispo { get; private set; }
 
+        /// <summary>
+        /// <see cref="SchaltartikelManager"/>
+        /// </summary>
         public override ISchaltartikelManager Schaltartikel { get; protected set; }
 
         /// <summary>
@@ -41,6 +42,21 @@ namespace RailNet.Clients.Ecos
         /// <see cref="IBasicClient"/>
         /// </summary>
         public IBasicClient BasicClient { get; private set; }
+
+        /// <summary>
+        /// <see cref="RueckmeldeManager"/>
+        /// </summary>
+        public RueckmeldeManager Rueckmelder { get; private set; }
+
+        /// <summary>
+        /// <see cref="LokManager"/>
+        /// </summary>
+        public LokManager Loks { get; private set; }
+
+        /// <summary>
+        /// <see cref="EcosManager"/>
+        /// </summary>
+        public EcosManager Ecos { get; private set; }
 
         /// <summary>
         /// Verbindet sich asynchron mit der ECoS und setzt den Status initial.
@@ -120,6 +136,9 @@ namespace RailNet.Clients.Ecos
         private void SetUpComponents()
         {
             Schaltartikel = new SchaltartikelManager(BasicClient);
+            Rueckmelder = new RueckmeldeManager(BasicClient);
+            Schaltartikel = new SchaltartikelManager(BasicClient);
+            Ecos = new EcosManager(BasicClient);
         }
 
         private RailStatus _status;

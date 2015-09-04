@@ -4,11 +4,9 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using RailNet.Clients.Ecos.Basic;
-using RailNet.Clients.Ecos.Extended;
-using static RailNet.Clients.Ecos.Basic.StaticIds;
-using static RailNet.Clients.Ecos.Basic.BefehlStrings;
+using RailNet.Clients.Ecos.Extended.Rueckmeldung;
 
-namespace RailNet.Clients.Ecos.Tests.Extended
+namespace RailNet.Clients.Ecos.Tests.Extended.Rueckmeldung
 {
     [TestFixture]
     public class RueckmeldeManagerTests
@@ -30,18 +28,18 @@ namespace RailNet.Clients.Ecos.Tests.Extended
         [Test]
         public async Task SubscribeOne()
         {
-            clientMock.Setup(x => x.QueryObjects(FeedbackManagerId))
+            clientMock.Setup(x => x.QueryObjects(StaticIds.FeedbackManagerId))
                 .ReturnsAsync(new BasicResponse(new[] { "<REPLY queryObjects(26)>", "100", "<END 0 (OK)>" }));
-            clientMock.Setup(x => x.Get(100, PortsS))
+            clientMock.Setup(x => x.Get(100, BefehlStrings.PortsS))
                 .ReturnsAsync(new BasicResponse(new[] { "<REPLY get(100, ports)>", "100 ports[16]", "<END 0 (OK)>" }));
-            clientMock.Setup(x => x.Request(100, ViewS, false))
+            clientMock.Setup(x => x.Request(100, BefehlStrings.ViewS, false))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY request(100, view)>", "<END 0 (OK)>"}));
 
             await subject.SubscribeAll();
 
-            clientMock.Verify(x => x.QueryObjects(FeedbackManagerId), Times.Exactly(1));
-            clientMock.Verify(x => x.Get(100, PortsS), Times.Exactly(1));
-            clientMock.Verify(x => x.Request(100, ViewS, false), Times.Exactly(1));
+            clientMock.Verify(x => x.QueryObjects(StaticIds.FeedbackManagerId), Times.Exactly(1));
+            clientMock.Verify(x => x.Get(100, BefehlStrings.PortsS), Times.Exactly(1));
+            clientMock.Verify(x => x.Request(100, BefehlStrings.ViewS, false), Times.Exactly(1));
 
             Assert.That(subject.Module.Count, Is.EqualTo(1));
             Assert.That(subject.Module.First().Value.Ports, Is.EqualTo(16));
@@ -52,24 +50,24 @@ namespace RailNet.Clients.Ecos.Tests.Extended
         [Test]
         public async Task SubscribeMore()
         {
-            clientMock.Setup(x => x.QueryObjects(FeedbackManagerId))
+            clientMock.Setup(x => x.QueryObjects(StaticIds.FeedbackManagerId))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY queryObjects(26)>", "100", "101", "<END 0 (OK)>"}));
-            clientMock.Setup(x => x.Get(100, PortsS))
+            clientMock.Setup(x => x.Get(100, BefehlStrings.PortsS))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY get(100, ports)>", "100 ports[16]", "<END 0 (OK)>"}));
-            clientMock.Setup(x => x.Request(100, ViewS, false))
+            clientMock.Setup(x => x.Request(100, BefehlStrings.ViewS, false))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY request(100, view)>", "<END 0 (OK)>"}));
-            clientMock.Setup(x => x.Get(101, PortsS))
+            clientMock.Setup(x => x.Get(101, BefehlStrings.PortsS))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY get(101, ports)>", "101 ports[8]", "<END 0 (OK)>"}));
-            clientMock.Setup(x => x.Request(101, ViewS, false))
+            clientMock.Setup(x => x.Request(101, BefehlStrings.ViewS, false))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY request(101, view)>", "<END 0 (OK)>"}));
 
             await subject.SubscribeAll();
 
-            clientMock.Verify(x => x.QueryObjects(FeedbackManagerId), Times.Exactly(1));
-            clientMock.Verify(x => x.Get(100, PortsS), Times.Exactly(1));
-            clientMock.Verify(x => x.Request(100, ViewS, false), Times.Exactly(1));
-            clientMock.Verify(x => x.Get(101, PortsS), Times.Exactly(1));
-            clientMock.Verify(x => x.Request(101, ViewS, false), Times.Exactly(1));
+            clientMock.Verify(x => x.QueryObjects(StaticIds.FeedbackManagerId), Times.Exactly(1));
+            clientMock.Verify(x => x.Get(100, BefehlStrings.PortsS), Times.Exactly(1));
+            clientMock.Verify(x => x.Request(100, BefehlStrings.ViewS, false), Times.Exactly(1));
+            clientMock.Verify(x => x.Get(101, BefehlStrings.PortsS), Times.Exactly(1));
+            clientMock.Verify(x => x.Request(101, BefehlStrings.ViewS, false), Times.Exactly(1));
 
             Assert.That(subject.Module.Count, Is.EqualTo(2));
 
@@ -89,18 +87,18 @@ namespace RailNet.Clients.Ecos.Tests.Extended
             subject.Module.Add(101, new RueckmeldeModul(101, 8));
             subject.Module.Add(102, new RueckmeldeModul(102, 16));
 
-            clientMock.Setup(x => x.Release(100, ViewS))
+            clientMock.Setup(x => x.Release(100, BefehlStrings.ViewS))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY release(100, view)>", "<END 0 (OK)>"}));
-            clientMock.Setup(x => x.Release(101, ViewS))
+            clientMock.Setup(x => x.Release(101, BefehlStrings.ViewS))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY release(101, view)>", "<END 0 (OK)>"}));
-            clientMock.Setup(x => x.Release(102, ViewS))
+            clientMock.Setup(x => x.Release(102, BefehlStrings.ViewS))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY release(102, view)>", "<END 0 (OK)>"}));
 
             await subject.UnsubscribeAll();
 
-            clientMock.Verify(x => x.Release(100, ViewS), Times.Exactly(1));
-            clientMock.Verify(x => x.Release(101, ViewS), Times.Exactly(1));
-            clientMock.Verify(x => x.Release(102, ViewS), Times.Exactly(1));
+            clientMock.Verify(x => x.Release(100, BefehlStrings.ViewS), Times.Exactly(1));
+            clientMock.Verify(x => x.Release(101, BefehlStrings.ViewS), Times.Exactly(1));
+            clientMock.Verify(x => x.Release(102, BefehlStrings.ViewS), Times.Exactly(1));
 
             Assert.That(subject.Module.Count, Is.EqualTo(0));
         }

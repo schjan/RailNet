@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RailNet.Clients.Ecos.Extended
+namespace RailNet.Clients.Ecos.Extended.Rueckmeldung
 {
     internal class RueckmeldeModul
     {

@@ -9,16 +9,19 @@ namespace RailNet.Clients.Ecos.Basic
         {
             foreach (var s in content)
             {
-                if(s.StartsWith("<"))
+                if (s.StartsWith("<"))
                     continue;
                 yield return s.Split(' ', ']', '[');
             }
         }
 
-        public static string TryGetParameterFromContent(string param, string content)
+        public static string TryGetParameterFromContent(string param, string content, bool hasQuotation = false)
         {
-            var match =
-                Regex.Match(content, @"(?<=" + param + @"\[)(?:\\.|[^\\])*(?=\])");
+            Match match;
+            if (hasQuotation)
+                match = Regex.Match(content, @"(?<=" + param + @"\[""\)(?:\\.|[^\\])*?(?=\""\])");
+            else
+                match = Regex.Match(content, @"(?<=" + param + @"\[)(?:\\.|[^\\])*?(?=\])");
 
             if (!match.Success)
                 return string.Empty;

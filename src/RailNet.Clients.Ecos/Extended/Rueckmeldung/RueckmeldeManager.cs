@@ -5,9 +5,8 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using NLog;
 using RailNet.Clients.Ecos.Basic;
-using static RailNet.Clients.Ecos.Basic.BefehlStrings;
 
-namespace RailNet.Clients.Ecos.Extended
+namespace RailNet.Clients.Ecos.Extended.Rueckmeldung
 {
     public class RueckmeldeManager
     {
@@ -42,14 +41,14 @@ namespace RailNet.Clients.Ecos.Extended
 
         private void HandleRueckmeldeEvent(BasicEvent evt)
         {
-            if(!Module.ContainsKey(evt.Receiver))
+            if (!Module.ContainsKey(evt.Receiver))
                 return;
 
             var result = BasicParser.TryGetParameterFromContent("state", evt.Content[0]);
             result = result.Substring(2);
 
             var belegung = Convert.ToInt16(result, 16);
-            
+
             var modul = Module[evt.Receiver];
 
             for (var i = 0; i < modul.Ports; i++)
@@ -67,8 +66,8 @@ namespace RailNet.Clients.Ecos.Extended
 
             foreach (var id in response.Content.Select(mod => Convert.ToInt32(mod)))
             {
-                var getPortResponse = await _basicClient.Get(id, PortsS);
-                var reqresponse = await _basicClient.Request(id, ViewS);
+                var getPortResponse = await _basicClient.Get(id, BefehlStrings.PortsS);
+                var reqresponse = await _basicClient.Request(id, BefehlStrings.ViewS);
 
                 if (reqresponse.HasError || getPortResponse.HasError)
                     _logger.Error($"Konnte nicht mit Rückmelder {id} verbinden");
@@ -85,10 +84,10 @@ namespace RailNet.Clients.Ecos.Extended
         public async Task UnsubscribeAll()
         {
             var messages =
-                Module.Select(rueckmeldeModul => _basicClient.Release(rueckmeldeModul.Key, ViewS)).Cast<Task>().ToList();
+                Module.Select(rueckmeldeModul => _basicClient.Release(rueckmeldeModul.Key, BefehlStrings.ViewS)).Cast<Task>().ToList();
 
             await Task.WhenAll(messages);
-            
+
             Module.Clear();
         }
     }
