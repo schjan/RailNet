@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +13,8 @@ namespace RailNet.Clients.Ecos.Basic
         {
             _dispo = dispo;
             _dispo.IncomingEvents.Subscribe(RaiseEventReceived);
+
+            EventObservable = _dispo.IncomingEvents;
         }
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace RailNet.Clients.Ecos.Basic
 
             if (max > 0 && max >= min)
             {
-                b.Append(string.Format(", nr[{0},{1}]", min, max));
+                b.Append($", nr[{min},{max}]");
             }
 
             b.Append(')');
@@ -71,7 +72,7 @@ namespace RailNet.Clients.Ecos.Basic
         public async Task<BasicResponse> Set(int id, Dictionary<string, string> args)
         {
             if (args.Count == 0)
-                throw new ArgumentNullException("args", "args duerfen nicht leer sein!");
+                throw new ArgumentNullException(nameof(args), "args duerfen nicht leer sein!");
 
             var str = new StringBuilder("set(");
             str.Append(id);
@@ -79,12 +80,12 @@ namespace RailNet.Clients.Ecos.Basic
             foreach (var arg in args)
             {
                 if (string.IsNullOrWhiteSpace(arg.Key) || string.IsNullOrWhiteSpace(arg.Value))
-                    throw new ArgumentNullException("args", "Im Dictionary darf kein leerer String vorkommen!");
+                    throw new ArgumentNullException(nameof(args), "Im Dictionary darf kein leerer String vorkommen!");
 
                 str.Append(", ")
                     .Append(arg.Key)
                     .Append('[')
-                    .Append(arg.Key == "name" ? string.Format("\"{0}\"", arg.Value) : arg.Value)
+                    .Append(arg.Key == "name" ? $"\"{arg.Value}\"" : arg.Value)
                     .Append(']');
             }
             str.Append(')');
@@ -111,7 +112,7 @@ namespace RailNet.Clients.Ecos.Basic
         public Task<BasicResponse> Set(int id, string param)
         {
             if (string.IsNullOrWhiteSpace(param))
-                throw new ArgumentNullException("param", "args duerfen nicht leer sein!");
+                throw new ArgumentNullException(nameof(param), "args duerfen nicht leer sein!");
 
             var b = new StringBuilder("set(");
             b.Append(id)
@@ -130,7 +131,7 @@ namespace RailNet.Clients.Ecos.Basic
         public Task<BasicResponse> Get(int id, params string[] args)
         {
             if (args.Length == 0)
-                throw new ArgumentNullException("args", "args duerfen nicht leer sein!");
+                throw new ArgumentNullException(nameof(args), "args duerfen nicht leer sein!");
 
             var b = new StringBuilder("get(");
             b.Append(id);
@@ -169,19 +170,19 @@ namespace RailNet.Clients.Ecos.Basic
                 foreach (var arg in args)
                 {
                     if (string.IsNullOrWhiteSpace(arg.Key) || string.IsNullOrWhiteSpace(arg.Value))
-                        throw new ArgumentNullException("args", "Im Dictionary darf kein leerer String vorkommen!");
+                        throw new ArgumentNullException(nameof(args), "Im Dictionary darf kein leerer String vorkommen!");
 
                     b.Append(", ")
                         .Append(arg.Key)
                         .Append('[')
-                        .Append(arg.Key == "name" ? string.Format("\"{0}\"", arg.Value) : arg.Value)
+                        .Append(arg.Key == "name" ? $"\"{arg.Value}\"" : arg.Value)
                         .Append(']');
                 }
 
             if (append)
-                b.Append(", append");
-
-            b.Append(')');
+                b.Append(", append)");
+            else
+                b.Append(')');
 
             return _dispo.SendCommandAsync(b.ToString());
         }
@@ -192,7 +193,7 @@ namespace RailNet.Clients.Ecos.Basic
         /// <param name="id">ID des Objektes</param>
         public Task<BasicResponse> Delete(int id)
         {
-            return _dispo.SendCommandAsync(string.Format("delete({0})", id));
+            return _dispo.SendCommandAsync($"delete({id})");
         }
 
         /// <summary>
@@ -204,9 +205,9 @@ namespace RailNet.Clients.Ecos.Basic
         public Task<BasicResponse> Request(int id, string param, bool force = false)
         {
             if (string.IsNullOrWhiteSpace(param))
-                throw new ArgumentNullException("param", "param darf nicht null sein!");
+                throw new ArgumentNullException(nameof(param), "param darf nicht null sein!");
 
-            string query = string.Format("request({0}, {1}", id, param);
+            string query = $"request({id}, {param}";
 
             query += force ? ", force)" : ")";
 
@@ -222,7 +223,7 @@ namespace RailNet.Clients.Ecos.Basic
         public Task<BasicResponse> Release(int id, params string[] args)
         {
             if (args.Length == 0)
-                throw new ArgumentNullException("args", "args duerfen nicht leer sein!");
+                throw new ArgumentNullException(nameof(args), "args duerfen nicht leer sein!");
 
             var b = new StringBuilder("release(");
             b.Append(id);
@@ -241,14 +242,15 @@ namespace RailNet.Clients.Ecos.Basic
         /// EventReceivedEvents wird ausgeführt, wenn ein Serverseitiges Event empfangen wurde.
         /// </summary>
         public event EventReceivedHandler EventReceived;
+        
+        public IObservable<BasicEvent> EventObservable { get; }
 
         /// <summary>
         /// Raises a BasicEvent
         /// </summary>
         protected void RaiseEventReceived(BasicEvent response)
         {
-            if (EventReceived != null)
-                EventReceived(this, new EventReceivedArgs(response));
+            EventReceived?.Invoke(this, new EventReceivedArgs(response));
         }
     }
 }

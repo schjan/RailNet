@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RailNet.Clients.Ecos.Basic
@@ -102,6 +100,11 @@ namespace RailNet.Clients.Ecos.Basic
         /// EventReceivedEvents wird ausgeführt, wenn ein Serverseitiges Event empfangen wurde.
         /// </summary>
         event EventReceivedHandler EventReceived;
+
+        /// <summary>
+        /// EventStream
+        /// </summary>
+        IObservable<BasicEvent> EventObservable { get; }
     }
 
     public delegate void EventReceivedHandler(object sender, EventReceivedArgs e);

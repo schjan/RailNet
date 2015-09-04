@@ -99,7 +99,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             mock.Verify(x => x.SendCommandAsync(query), Times.Once());
             Assert.That(result.Command, Is.EqualTo(query));
-            Assert.That(result.Content[1], Is.EqualTo("5 addr[3]"));
+            Assert.That(result.Content[0], Is.EqualTo("5 addr[3]"));
         }
 
 
@@ -144,7 +144,7 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             mock.Verify(x => x.SendCommandAsync(query), Times.Once());
             Assert.That(result.Command, Is.EqualTo(query));
-            Assert.That(result.Content[1], Is.EqualTo("5 name[\"Big Boy\"]"));
+            Assert.That(result.Content[0], Is.EqualTo("5 name[\"Big Boy\"]"));
         }
 
         #endregion

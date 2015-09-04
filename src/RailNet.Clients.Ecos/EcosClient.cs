@@ -22,50 +22,25 @@ namespace RailNet.Clients.Ecos
     /// Hauptklasse zur Verbindung mit der Modellbahnanlage
     /// <see cref="RailNetClientBase"/>
     /// </summary>
-    public class RailClient : RailNetClientBase, INotifyPropertyChanged
+    public class EcosClient : RailNetClientBase, INotifyPropertyChanged
     {
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private INetworkClient _networkClient;
-        protected INetworkClient NetworkClient
-        {
-            get { return _networkClient; }
-        }
+        protected INetworkClient NetworkClient { get; private set; }
 
-        private INachrichtenDispo _nachrichtenDispo;
-        protected INachrichtenDispo NachrichtenDispo
-        {
-            get { return _nachrichtenDispo; }
-        }
+        protected INachrichtenDispo NachrichtenDispo { get; private set; }
 
-        private ISchaltartikelManager _schaltartikel;
-        public override ISchaltartikelManager Schaltartikel
-        {
-            get { return _schaltartikel; }
-            protected set { _schaltartikel = value; }
-        }
+        public override ISchaltartikelManager Schaltartikel { get; protected set; }
 
         /// <summary>
         /// Gibt an, ob der Client mit der ECoS verbunden ist.
         /// </summary>
-        public override bool Connected
-        {
-            get
-            {
-                if (NetworkClient != null)
-                    return NetworkClient.Connected;
-                return false;
-            }
-        }
+        public override bool Connected => NetworkClient != null && NetworkClient.Connected;
 
-        private IBasicClient _basicClient;
         /// <summary>
         /// <see cref="IBasicClient"/>
         /// </summary>
-        public IBasicClient BasicClient
-        {
-            get { return _basicClient; }
-        }
+        public IBasicClient BasicClient { get; private set; }
 
         /// <summary>
         /// Verbindet sich asynchron mit der ECoS und setzt den Status initial.
@@ -118,7 +93,7 @@ namespace RailNet.Clients.Ecos
             }
             OnPropertyChanged("Status");
 
-            logger.Trace(() => ("Status changed to " + _status));
+            _logger.Trace(() => ("Status changed to " + _status));
         }
 
         /// <summary>
@@ -129,7 +104,7 @@ namespace RailNet.Clients.Ecos
             NetworkClient.Disconnect();
         }
 
-        public RailClient()
+        public EcosClient()
         {
             SetUpIoC();
             SetUpComponents();
@@ -137,9 +112,9 @@ namespace RailNet.Clients.Ecos
 
         private void SetUpIoC()
         {
-            _networkClient = new NetworkClient();
-            _nachrichtenDispo = new NachrichtenDispo(_networkClient);
-            _basicClient = new BasicClient(NachrichtenDispo);
+            NetworkClient = new NetworkClient();
+            NachrichtenDispo = new NachrichtenDispo(NetworkClient);
+            BasicClient = new BasicClient(NachrichtenDispo);
         }
 
         private void SetUpComponents()
@@ -178,8 +153,7 @@ namespace RailNet.Clients.Ecos
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
