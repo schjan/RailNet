@@ -25,7 +25,7 @@ namespace RailNet.Clients.Ecos.Extended
 
         public async Task SubscribeAll()
         {
-            var response = await _basicClient.QueryObjects(StaticIds.FeedbackManager);
+            var response = await _basicClient.QueryObjects(StaticIds.FeedbackManagerId);
 
             if (response.HasError)
                 throw new InvalidDataReceivedException("Fehler beim Abrufen der Rückmeldemodule");

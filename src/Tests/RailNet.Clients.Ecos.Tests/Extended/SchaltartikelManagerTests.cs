@@ -22,18 +22,26 @@ namespace RailNet.Clients.Ecos.Tests.Extended
         }
 
         [Test]
-        public async Task SetzeAdresseTest()
+        public async Task SetzeMotorolaAdresse()
         {
-            clientMock.Setup(x => x.Set(11, "switch", "DCC1g"))
-                .ReturnsAsync(new BasicResponse(new[] {"<REPLY set(11, switch[DCC1g])>", "<END 0 (OK)>"}));
             clientMock.Setup(x => x.Set(11, "switch", "MOT1r"))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY set(11, switch[MOT1r])>", "<END 0 (OK)>"}));
 
+            await subject.SetzeAdresse(1, false, Digitalsystem.Motorola);
+
+            clientMock.Verify(x => x.Set(11, "switch", "MOT1r"), Times.Exactly(1));
+        }
+
+        [Test]
+        public async Task SetzeDccAdresse()
+        {
+            clientMock.Setup(x => x.Set(11, "switch", "DCC1g"))
+                .ReturnsAsync(new BasicResponse(new[] {"<REPLY set(11, switch[DCC1g])>", "<END 0 (OK)>"}));
+
             await subject.SetzeAdresse(1, true, Digitalsystem.DCC);
+
             clientMock.Verify(x => x.Set(11, "switch", "DCC1g"), Times.Exactly(1));
 
-            await subject.SetzeAdresse(1, false, Digitalsystem.Motorola);
-            clientMock.Verify(x => x.Set(11, "switch", "MOT1r"), Times.Exactly(1));
         }
     }
 }

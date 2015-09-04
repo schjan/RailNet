@@ -22,9 +22,9 @@ namespace RailNet.Clients.Ecos
     /// Hauptklasse zur Verbindung mit der Modellbahnanlage
     /// <see cref="RailNetClientBase"/>
     /// </summary>
-    public class RailClient : RailNetClientBase, INotifyPropertyChanged
+    public class EcosClient : RailNetClientBase, INotifyPropertyChanged
     {
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         protected INetworkClient NetworkClient { get; private set; }
 
@@ -93,7 +93,7 @@ namespace RailNet.Clients.Ecos
             }
             OnPropertyChanged("Status");
 
-            logger.Trace(() => ("Status changed to " + _status));
+            _logger.Trace(() => ("Status changed to " + _status));
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace RailNet.Clients.Ecos
             NetworkClient.Disconnect();
         }
 
-        public RailClient()
+        public EcosClient()
         {
             SetUpIoC();
             SetUpComponents();

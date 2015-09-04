@@ -16,7 +16,7 @@ namespace RailNet.Signalsteuerung.WF
 {
     public partial class Form1 : Form
     {
-        private RailClient rc;
+        private EcosClient rc;
         private ILogger logger = LogManager.GetCurrentClassLogger();
 
         public Form1()
@@ -26,7 +26,7 @@ namespace RailNet.Signalsteuerung.WF
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            rc = new RailClient();
+            rc = new EcosClient();
         }
 
         private async void RadioClick(object sender, EventArgs e)

@@ -78,9 +78,11 @@
     <Compile Include="Basic\BasicClientTests.cs" />
     <Compile Include="Basic\BasicParserTests.cs" />
     <Compile Include="Basic\NachrichtenDispoTests.cs" />
+    <Compile Include="Extended\EcosManagerTests.cs" />
+    <Compile Include="Extended\RueckmeldeManagerTests.cs" />
     <Compile Include="Extended\SchaltartikelManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RailClientTests.cs" />
+    <Compile Include="EcosClientTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

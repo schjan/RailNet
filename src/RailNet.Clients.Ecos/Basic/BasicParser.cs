@@ -22,7 +22,7 @@ namespace RailNet.Clients.Ecos.Basic
         public static string TryGetParameterFromContent(string param, string content)
         {
             var match =
-                Regex.Match(content, $@"(?<={param}\[)(?:\\.|[^\\])*(?=\])");
+                Regex.Match(content, @"(?<=" + param + @"\[)(?:\\.|[^\\])*(?=\])");
 
             if (!match.Success)
                 return string.Empty;

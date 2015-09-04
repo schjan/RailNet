@@ -8,29 +8,29 @@ using NUnit.Framework;
 namespace RailNet.Clients.Ecos.Tests
 {
     [TestFixture]
-    public class RailClientTests
+    public class EcosClientTests
     {
-        public RailClient rc;
+        public EcosClient ec;
 
         [SetUp]
         public void SetUp()
         {
-            rc = new RailClient();
+            ec = new EcosClient();
         }
 
         [Test]
         [Ignore("Needs ECoS connected to Network")]
         public async Task Connect()
         {
-            Assert.False(rc.Connected);
+            Assert.False(ec.Connected);
 
-            await rc.ConnectAsync("ecos");
+            await ec.ConnectAsync("ecos");
 
-            Assert.True(rc.Connected);
+            Assert.True(ec.Connected);
 
-            rc.Disconnect();
+            ec.Disconnect();
 
-            Assert.False(rc.Connected);
+            Assert.False(ec.Connected);
         }
     }
 }
