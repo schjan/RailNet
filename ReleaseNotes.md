@@ -1,3 +1,7 @@
+#### 0.1.1-beta
+* RückmeldeManager Hinzugefügt
+* EcosManager Hinzugefügt
+
 #### 0.0.4-alpha2
 * TinyIoC aus Lib entfernt.
 
