@@ -139,7 +139,7 @@ Target "CreatePackage" (fun _ ->
 
     CopyFiles packageDir ["README.md"; "ReleaseNotes.md"]
 
-    let ShouldPublish = isAppVeyorBuild && environVar "APPVEYOR_REPO_TAG" = "True" && environVar "nugetkey" <> null
+    let ShouldPublish = isAppVeyorBuild && AppVeyorEnvironment.RepoTag && environVar "nugetkey" <> null
 
     printfn "Me should Publish?: %b" ShouldPublish
 
