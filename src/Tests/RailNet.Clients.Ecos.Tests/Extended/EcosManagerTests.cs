@@ -55,5 +55,27 @@ namespace RailNet.Clients.Ecos.Tests.Extended
             clientMock.Verify(x => x.Get(EcosId, "status"));
             Assert.That(result, Is.True);
         }
+
+        [Test]
+        public async Task UpdateInfo()
+        {
+            clientMock.Setup(x => x.Get(EcosId, "info"))
+                .ReturnsAsync(new BasicResponse(new[] {
+                    "<REPLY get(1, info)>",
+                    "1 ECoS",
+                    "1 ProtocolVersion[0.2]",
+                    "1 ApplicationVersion[4.0.2]",
+                    "1 HardwareVersion[2.0]",
+                    "<END 0 (OK)>" }));
+
+            var result = await subject.UpdateInfo();
+
+            clientMock.Verify(x => x.Get(EcosId, "info"));
+            Assert.That(result, Is.True);
+
+            Assert.That(subject.ApplicationVersion, Is.EqualTo("4.0.2"));
+            Assert.That(subject.ProtocolVersion, Is.EqualTo("0.2"));
+            Assert.That(subject.HardwareVersion, Is.EqualTo("2.0"));
+        }
     }
 }

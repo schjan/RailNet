@@ -34,15 +34,10 @@ namespace RailNet.Clients.Ecos.Extended.Lok
                 if (Loks.ContainsKey(id))
                     continue;
 
-
+                Loks.Add(id, new Lok {});
             }
 
             return true;
-        }
-
-        public async Task<bool> UpdateLokWithId(int id)
-        {
-            
         }
 
         public async Task<bool> RequestChanges()
