@@ -9,7 +9,7 @@ namespace RailNet.Clients.Ecos.Extended.Lok
     public class LokManager
     {
         private readonly IBasicClient _basicClient;
-        internal readonly Dictionary<int, Lok> Loks; 
+        internal readonly Dictionary<int, Lok> Loks;
 
         public LokManager(IBasicClient basicClient)
         {
@@ -34,7 +34,7 @@ namespace RailNet.Clients.Ecos.Extended.Lok
                 if (Loks.ContainsKey(id))
                     continue;
 
-                Loks.Add(id, new Lok {});
+                Loks.Add(id, new Lok(id) {Name = name});
             }
 
             return true;

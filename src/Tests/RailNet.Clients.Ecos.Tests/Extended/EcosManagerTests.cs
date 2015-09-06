@@ -30,29 +30,29 @@ namespace RailNet.Clients.Ecos.Tests.Extended
 
             await subject.Go();
 
-			clientMock.Verify(x => x.Set(StaticIds.EcosId, "go"), Times.Exactly(1));
+            clientMock.Verify(x => x.Set(StaticIds.EcosId, "go"), Times.Exactly(1));
         }
 
         [Test]
         public async Task SetzeStop()
         {
-			clientMock.Setup(x => x.Set(StaticIds.EcosId, "stop"))
+            clientMock.Setup(x => x.Set(StaticIds.EcosId, "stop"))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY set(1, stop)>", "<END 0 (OK)>"}));
 
             await subject.Stop();
 
-			clientMock.Verify(x => x.Set(StaticIds.EcosId, "stop"), Times.Exactly(1));
+            clientMock.Verify(x => x.Set(StaticIds.EcosId, "stop"), Times.Exactly(1));
         }
 
         [Test]
         public async Task GetStatus()
         {
-			clientMock.Setup(x => x.Get(StaticIds.EcosId, "status"))
+            clientMock.Setup(x => x.Get(StaticIds.EcosId, "status"))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY get(1, status)>", "1 status[GO]", "<END 0 (OK)>"}));
 
             var result = await subject.GetStatus();
 
-			clientMock.Verify(x => x.Get(StaticIds.EcosId, "status"));
+            clientMock.Verify(x => x.Get(StaticIds.EcosId, "status"));
             Assert.That(result, Is.True);
         }
 
@@ -60,13 +60,15 @@ namespace RailNet.Clients.Ecos.Tests.Extended
         public async Task UpdateInfo()
         {
             clientMock.Setup(x => x.Get(EcosId, "info"))
-                .ReturnsAsync(new BasicResponse(new[] {
+                .ReturnsAsync(new BasicResponse(new[]
+                {
                     "<REPLY get(1, info)>",
                     "1 ECoS",
                     "1 ProtocolVersion[0.2]",
                     "1 ApplicationVersion[4.0.2]",
                     "1 HardwareVersion[2.0]",
-                    "<END 0 (OK)>" }));
+                    "<END 0 (OK)>"
+                }));
 
             var result = await subject.UpdateInfo();
 

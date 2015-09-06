@@ -29,9 +29,9 @@ namespace RailNet.Clients.Ecos.Tests.Extended.Rueckmeldung
         public async Task SubscribeOne()
         {
             clientMock.Setup(x => x.QueryObjects(StaticIds.FeedbackManagerId))
-                .ReturnsAsync(new BasicResponse(new[] { "<REPLY queryObjects(26)>", "100", "<END 0 (OK)>" }));
+                .ReturnsAsync(new BasicResponse(new[] {"<REPLY queryObjects(26)>", "100", "<END 0 (OK)>"}));
             clientMock.Setup(x => x.Get(100, BefehlStrings.PortsS))
-                .ReturnsAsync(new BasicResponse(new[] { "<REPLY get(100, ports)>", "100 ports[16]", "<END 0 (OK)>" }));
+                .ReturnsAsync(new BasicResponse(new[] {"<REPLY get(100, ports)>", "100 ports[16]", "<END 0 (OK)>"}));
             clientMock.Setup(x => x.Request(100, BefehlStrings.ViewS, false))
                 .ReturnsAsync(new BasicResponse(new[] {"<REPLY request(100, view)>", "<END 0 (OK)>"}));
 
@@ -112,14 +112,14 @@ namespace RailNet.Clients.Ecos.Tests.Extended.Rueckmeldung
 
             eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 100>", "100 state[0x0]", "<END 0 (OK)>"}));
             Assert.That(GetBelegtstatusOfModul(modul), Is.EqualTo("0000000000000000"));
-            
-            eventObservable.OnNext(new BasicEvent(new[] { "<EVENT 100>", "100 state[0x10]", "<END 0 (OK)>" }));
+
+            eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 100>", "100 state[0x10]", "<END 0 (OK)>"}));
             Assert.That(GetBelegtstatusOfModul(modul), Is.EqualTo("0000100000000000"));
 
-            eventObservable.OnNext(new BasicEvent(new[] { "<EVENT 100>", "100 state[0x861D]", "<END 0 (OK)>" }));
+            eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 100>", "100 state[0x861D]", "<END 0 (OK)>"}));
             Assert.That(GetBelegtstatusOfModul(modul), Is.EqualTo("1011100001100001"));
 
-            eventObservable.OnNext(new BasicEvent(new[] { "<EVENT 100>", "100 state[0xFFFF]", "<END 0 (OK)>" }));
+            eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 100>", "100 state[0xFFFF]", "<END 0 (OK)>"}));
             Assert.That(GetBelegtstatusOfModul(modul), Is.EqualTo("1111111111111111"));
         }
 

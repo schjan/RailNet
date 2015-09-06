@@ -1,15 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RailNet.Clients.Ecos.Extended.Lok
+﻿namespace RailNet.Clients.Ecos.Extended.Lok
 {
     public class Lok
     {
-        public int Speed;
-        public int SpeedSteps;
-        public bool Direction;
+        public Lok(int id)
+        {
+            Id = id;
+        } 
+
+        public int Id { get; }
+
+        /// <summary>
+        /// Anzeigename der Lok innerhalb der ECoS
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Aktuelle Geschwindigkeitsstufe
+        /// </summary>
+        public int Speed { get; set; }
+
+        /// <summary>
+        /// Anzahl der verfügbaren Geschwindigkeitsstufen.
+        /// </summary>
+        public int SpeedSteps { get; set; }
+
+        public bool Direction { get; set; }
     }
 }

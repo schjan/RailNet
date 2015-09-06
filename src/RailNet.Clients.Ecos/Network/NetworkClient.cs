@@ -93,6 +93,8 @@ namespace RailNet.Clients.Ecos.Network
         /// <returns>SocketError Error</returns>
         public async Task<SocketError> ConnectAsync(string host, int port)
         {
+            _shouldStop = false;
+
             if (_tcpClient == null)
                 CreateTcpClient();
 
@@ -180,9 +182,9 @@ namespace RailNet.Clients.Ecos.Network
                     {
                         await ListenAsync();
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-
+                        logger.Error(ex);
                     }
                 }
             });
