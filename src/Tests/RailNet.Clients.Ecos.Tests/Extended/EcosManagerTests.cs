@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using RailNet.Clients.Ecos.Basic;
@@ -13,12 +15,16 @@ namespace RailNet.Clients.Ecos.Tests.Extended
     {
         private EcosManager subject;
         private Mock<IBasicClient> clientMock;
+        private Subject<BasicEvent> eventObservable;
 
 
         [SetUp]
         public void SetUp()
         {
+            eventObservable = new Subject<BasicEvent>();
             clientMock = new Mock<IBasicClient>();
+            clientMock.Setup(x => x.EventObservable).Returns(eventObservable);
+
             subject = new EcosManager(clientMock.Object);
         }
 
@@ -78,6 +84,62 @@ namespace RailNet.Clients.Ecos.Tests.Extended
             Assert.That(subject.ApplicationVersion, Is.EqualTo("4.0.2"));
             Assert.That(subject.ProtocolVersion, Is.EqualTo("0.2"));
             Assert.That(subject.HardwareVersion, Is.EqualTo("2.0"));
+        }
+
+
+        [Test]
+        public async Task SubscribeUnsubscribe()
+        {
+            clientMock.Setup(x => x.Request(StaticIds.EcosId, "view", false))
+                .ReturnsAsync(new BasicResponse(new[] {"<REPLY request(1, view)>", "<END 0 (OK)>"}));
+
+            clientMock.Setup(x => x.Release(StaticIds.EcosId, "view"))
+                .ReturnsAsync(new BasicResponse(new[] {"<REPLY release(1, view)>", "<END 0 (OK)>"}));
+
+            await subject.SubscribeToStatus();
+
+            bool falseSet = false, trueSet = false;
+
+            subject.StatusObservable.Subscribe(x =>
+            {
+                if (x)
+                    trueSet = true;
+                else
+                    falseSet = true;
+            });
+
+            eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 1>", "1 status[GO]", "<END 0 (OK)>"}));
+
+            Assert.True(trueSet);
+            Assert.False(falseSet);
+            trueSet = false;
+
+            eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 1>", "1 status[STOP]", "<END 0 (OK)>"}));
+
+            Assert.False(trueSet);
+            Assert.True(falseSet);
+            falseSet = false;
+
+            //Ungueltige Message  
+            eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 1>", "1 toeff[GO]", "<END 0 (OK)>"}));
+
+            Assert.False(trueSet);
+            Assert.False(falseSet);
+
+            eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 1>", "1 status[STOP]", "<END 0 (OK)>"}));
+
+            Assert.False(trueSet);
+            Assert.True(falseSet);
+            falseSet = false;
+
+
+            await subject.UnsubscribeFromStatus();
+
+
+            eventObservable.OnNext(new BasicEvent(new[] {"<EVENT 1>", "1 toeff[GO]", "<END 0 (OK)>"}));
+
+            Assert.False(trueSet);
+            Assert.False(falseSet);
         }
     }
 }
