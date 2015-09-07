@@ -67,6 +67,7 @@
     <Compile Include="Basic\BasicParserTests.cs" />
     <Compile Include="Basic\NachrichtenDispoTests.cs" />
     <Compile Include="Extended\EcosManagerTests.cs" />
+    <Compile Include="Extended\LokManagerTests.cs" />
     <Compile Include="Extended\Rueckmeldung\RueckmeldeManagerTests.cs" />
     <Compile Include="Extended\SchaltartikelManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

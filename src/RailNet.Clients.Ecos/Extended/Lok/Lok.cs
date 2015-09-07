@@ -17,12 +17,12 @@
         /// <summary>
         /// Aktuelle Geschwindigkeitsstufe
         /// </summary>
-        public int Speed { get; set; }
+        public byte Speed { get; set; }
 
         /// <summary>
         /// Anzahl der verfügbaren Geschwindigkeitsstufen.
         /// </summary>
-        public int SpeedSteps { get; set; }
+        public byte SpeedSteps { get; set; }
 
         public bool Direction { get; set; }
     }

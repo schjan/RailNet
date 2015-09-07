@@ -19,7 +19,7 @@ namespace RailNet.Clients.Ecos.Basic
         {
             Match match;
             if (hasQuotation)
-                match = Regex.Match(content, @"(?<=" + param + @"\[""\)(?:\\.|[^\\])*?(?=\""\])");
+                match = Regex.Match(content, @"(?<=" + param + @"\[\"")(?:\\.|[^\\])*?(?=\""\])");
             else
                 match = Regex.Match(content, @"(?<=" + param + @"\[)(?:\\.|[^\\])*?(?=\])");
 

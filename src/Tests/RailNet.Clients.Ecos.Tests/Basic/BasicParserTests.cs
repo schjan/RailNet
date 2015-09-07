@@ -29,5 +29,32 @@ namespace RailNet.Clients.Ecos.Tests.Basic
 
             Assert.That(result, Is.EqualTo("Z[[[ug"));
         }
+
+        [Test]
+        public void TryGetParameterWithQuotationFromContentTest()
+        {
+            var result = BasicParser.TryGetParameterFromContent("name2", "blablabla name1[\"Train\"] name2[\"Zug\"]",
+                true);
+
+            Assert.That(result, Is.EqualTo("Zug"));
+        }
+
+        [Test]
+        public void TryGetParameterWithQuotationFromContentTestFails()
+        {
+            var result = BasicParser.TryGetParameterFromContent("name3", "blablabla name1[\"Train\"] name2[\"Zug\"]",
+                true);
+
+            Assert.That(result, Is.Empty);
+        }
+
+        [Test]
+        public void TryGetParameterWithQuotationFromContentTestChars()
+        {
+            var result = BasicParser.TryGetParameterFromContent("name2", "blablabla name1[\"Train\"] name2[\"Z[[[ug\"]",
+                true);
+
+            Assert.That(result, Is.EqualTo("Z[[[ug"));
+        }
     }
 }
