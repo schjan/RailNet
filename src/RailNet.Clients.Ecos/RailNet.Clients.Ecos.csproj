@@ -80,6 +80,7 @@
     <Compile Include="Basic\StaticIds.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Extended\EcosManager.cs" />
+    <Compile Include="Extended\Lok\Fahrtrichtung.cs" />
     <Compile Include="Extended\Lok\Lok.cs" />
     <Compile Include="Extended\Lok\LokManager.cs" />
     <Compile Include="Extended\Rueckmeldung\RueckmeldeModul.cs" />

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using RailNet.Clients.Ecos.Basic;
 
@@ -11,11 +11,16 @@ namespace RailNet.Clients.Ecos.Extended.Lok
     {
         private readonly IBasicClient _basicClient;
         internal readonly Dictionary<int, Lok> Loks;
+        private IDisposable _subscription;
 
         public LokManager(IBasicClient basicClient)
         {
             _basicClient = basicClient;
             Loks = new Dictionary<int, Lok>();
+
+            _subscription =
+                _basicClient.EventObservable.Where(x => x.Receiver == 10 || (1000 <= x.Receiver && x.Receiver < 1999))
+                    .Subscribe(HandleEvent);
         }
 
         public async Task<bool> QueryAll()
@@ -35,7 +40,7 @@ namespace RailNet.Clients.Ecos.Extended.Lok
                 if (Loks.ContainsKey(id))
                     continue;
 
-                Loks.Add(id, new Lok(id) {Name = name, SpeedSteps = GetFahrstufenByProtocol(protocol)});
+                Loks.Add(id, new Lok(id, this, _basicClient, GetFahrstufenByProtocol(protocol)) {Name = name});
             }
 
             return true;
@@ -69,6 +74,32 @@ namespace RailNet.Clients.Ecos.Extended.Lok
                     return 126; //?
                 default:
                     return 0;
+            }
+        }
+
+        private void HandleEvent(BasicEvent evt)
+        {
+            if (evt.Receiver != 10)
+            {
+                HandleLokEvent(evt);
+            }
+        }
+
+        private void HandleLokEvent(BasicEvent evt)
+        {
+            if (!Loks.ContainsKey(evt.Receiver))
+                return;
+
+            var lok = Loks[evt.Receiver];
+
+            foreach (var s in evt.Content)
+            {
+                if (s.Contains("speedstep"))
+                    lok.Fahrstufe = Convert.ToByte(BasicParser.TryGetParameterFromContent("speedstep", s));
+                if (s.Contains("dir"))
+                    lok.Fahrtrichtung = BasicParser.TryGetParameterFromContent("dir", s) == "0"
+                        ? Fahrtrichtung.Vorwaerts
+                        : Fahrtrichtung.Rueckwaerts;
             }
         }
     }

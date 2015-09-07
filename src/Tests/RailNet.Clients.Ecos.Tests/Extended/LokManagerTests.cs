@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Subjects;
-using System.Text;
+﻿using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using RailNet.Clients.Ecos.Basic;
-using RailNet.Clients.Ecos.Extended;
 using RailNet.Clients.Ecos.Extended.Lok;
 
 namespace RailNet.Clients.Ecos.Tests.Extended
@@ -18,8 +13,7 @@ namespace RailNet.Clients.Ecos.Tests.Extended
         private LokManager subject;
         private Mock<IBasicClient> clientMock;
         private Subject<BasicEvent> eventObservable;
-
-
+        
         [SetUp]
         public void SetUp()
         {
@@ -51,29 +45,46 @@ namespace RailNet.Clients.Ecos.Tests.Extended
             Assert.That(subject.Loks.Count, Is.EqualTo(6));
 
             Assert.That(subject.Loks[1000].Id, Is.EqualTo(1000));
-            Assert.That(subject.Loks[1000].SpeedSteps, Is.EqualTo(127));
+            Assert.That(subject.Loks[1000].MaxFahrstufe, Is.EqualTo(127));
             Assert.That(subject.Loks[1000].Name, Is.EqualTo("ET 420"));
-
+            
             Assert.That(subject.Loks[1001].Id, Is.EqualTo(1001));
-            Assert.That(subject.Loks[1001].SpeedSteps, Is.EqualTo(14));
+            Assert.That(subject.Loks[1001].MaxFahrstufe, Is.EqualTo(14));
             Assert.That(subject.Loks[1001].Name, Is.EqualTo("ET 421"));
 
             Assert.That(subject.Loks[1002].Id, Is.EqualTo(1002));
-            Assert.That(subject.Loks[1002].SpeedSteps, Is.EqualTo(128));
+            Assert.That(subject.Loks[1002].MaxFahrstufe, Is.EqualTo(128));
             Assert.That(subject.Loks[1002].Name, Is.EqualTo("ET 422"));
 
             Assert.That(subject.Loks[1003].Id, Is.EqualTo(1003));
-            Assert.That(subject.Loks[1003].SpeedSteps, Is.EqualTo(14));
+            Assert.That(subject.Loks[1003].MaxFahrstufe, Is.EqualTo(14));
             Assert.That(subject.Loks[1003].Name, Is.EqualTo("ET 423"));
 
             Assert.That(subject.Loks[1004].Id, Is.EqualTo(1004));
-            Assert.That(subject.Loks[1004].SpeedSteps, Is.EqualTo(28));
+            Assert.That(subject.Loks[1004].MaxFahrstufe, Is.EqualTo(28));
             Assert.That(subject.Loks[1004].Name, Is.EqualTo("ET 424"));
 
             Assert.That(subject.Loks[1005].Id, Is.EqualTo(1005));
-            Assert.That(subject.Loks[1005].SpeedSteps, Is.EqualTo(127));
+            Assert.That(subject.Loks[1005].MaxFahrstufe, Is.EqualTo(127));
             Assert.That(subject.Loks[1005].Name, Is.EqualTo("ET 425"));
-            //Assert.That(subject.Loks[1000].Adress, Is.EqualTo(1000));
+        }
+
+        [Test]
+        public void ReceiveFahrstufenEvent()
+        {
+            var testLok = new Lok(1000, subject, clientMock.Object, 28);
+
+            subject.Loks.Add(1000, testLok);
+
+            eventObservable.OnNext(new BasicEvent(new[]
+            {
+                "<EVENT 1000>",
+                "1000 speed[29]",
+                "1000 speedstep[7]",
+                "<END 0 (OK)>"
+            }));
+
+            Assert.That(testLok.Fahrstufe, Is.EqualTo(7));
         }
     }
 }
