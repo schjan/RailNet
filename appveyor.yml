@@ -9,7 +9,7 @@ install:
   - cmd: nuget install GitVersion.CommandLine -OutputDirectory tools -Version 3.3.0
 
 before_build:
-  - cmd: tools\GitVersion.CommandLine\tools\GitVersion.exe /l console /output buildserver /updateAssemblyInfo
+  - ps: .\tools\GitVersion.CommandLine.3.3.0\tools\GitVersion.exe /l console /output buildserver /updateAssemblyInfo
 
 build:
   parallel: true
@@ -21,6 +21,3 @@ artifacts:
 cache:
   - src\packages -> **\packages.config
   - tools\
-  
-on_finish:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
