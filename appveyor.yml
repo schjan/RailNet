@@ -9,7 +9,7 @@ install:
   - cmd: nuget install GitVersion.CommandLine -OutputDirectory tools -Version 3.3.0
 
 before_build:
-  - ps: .\tools\GitVersion.CommandLine\tools\GitVersion.exe /l console /output buildserver /updateAssemblyInfo
+  - cmd: tools\GitVersion.CommandLine\tools\GitVersion.exe /l console /output buildserver /updateAssemblyInfo
 
 build:
   parallel: true
