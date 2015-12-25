@@ -3,22 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using NLog;
 using RailNet.Clients.Ecos.Basic;
+using RailNet.Core;
+using RailNet.Core.Logging;
 
 namespace RailNet.Clients.Ecos.Extended.Rueckmeldung
 {
     public class RueckmeldeManager
     {
         private readonly IBasicClient _basicClient;
-        private readonly ILogger _logger;
         private readonly IDisposable _eventHandler;
         internal readonly Dictionary<int, RueckmeldeModul> Module;
 
         public RueckmeldeManager(IBasicClient basicClient)
         {
-            _logger = LogManager.GetCurrentClassLogger();
-
             Module = new Dictionary<int, RueckmeldeModul>();
 
             _basicClient = basicClient;
@@ -70,7 +68,7 @@ namespace RailNet.Clients.Ecos.Extended.Rueckmeldung
                 var reqresponse = await _basicClient.Request(id, BefehlStrings.ViewS);
 
                 if (reqresponse.HasError || getPortResponse.HasError)
-                    _logger.Error($"Konnte nicht mit Rückmelder {id} verbinden");
+                    RailNetClientBase.Logger.Error($"Konnte nicht mit Rückmelder {id} verbinden");
                 else
                 {
                     var ports =

@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using NLog;
 using RailNet.Clients.Ecos.Basic;
 using RailNet.Clients.Ecos.Extended;
 using RailNet.Clients.Ecos.Extended.Lok;
@@ -13,6 +12,7 @@ using RailNet.Clients.Ecos.Extended.Rueckmeldung;
 using RailNet.Clients.Ecos.Network;
 using RailNet.Core;
 using RailNet.Core.Extended;
+using RailNet.Core.Logging;
 
 namespace RailNet.Clients.Ecos
 {
@@ -22,11 +22,9 @@ namespace RailNet.Clients.Ecos
     /// </summary>
     public class EcosClient : RailNetClientBase, INotifyPropertyChanged
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
         protected INetworkClient NetworkClient { get; private set; }
 
-        protected INachrichtenDispo NachrichtenDispo { get; private set; }
+        internal INachrichtenDispo NachrichtenDispo { get; private set; }
 
         /// <summary>
         /// <see cref="SchaltartikelManager"/>
@@ -107,9 +105,11 @@ namespace RailNet.Clients.Ecos
                     _status = RailStatus.Stop;
                     break;
             }
+
+            // ReSharper disable once ExplicitCallerInfoArgument
             OnPropertyChanged("Status");
 
-            _logger.Trace(() => ("Status changed to " + _status));
+            Logger.Trace("Status changed to " + _status);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace RailNet.Clients.Ecos
             NetworkClient.Disconnect();
         }
 
-        public EcosClient()
+        public EcosClient(IRailLogger logger = null) : base(logger)
         {
             SetUpIoC();
             SetUpComponents();

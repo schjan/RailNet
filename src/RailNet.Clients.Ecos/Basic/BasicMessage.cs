@@ -3,16 +3,42 @@ using System.Linq;
 
 namespace RailNet.Clients.Ecos.Basic
 {
+    /// <summary>
+    /// Message wie es von der ECOS an den <see cref="BasicClient">Client</see> gesendet wird.
+    /// </summary>
     public abstract class BasicMessage
     {
+        /// <summary>
+        /// Einzelne Zeilen der Nachricht
+        /// </summary>
         public string[] Content { get; }
 
+        /// <summary>
+        /// Fehler Beschreibung. Leer wenn kein Fehler.
+        /// </summary>
         public string Error { get; private set; }
+
+        /// <summary>
+        /// Fehlernummer. 0 wenn kein Fehler.
+        /// </summary>
         public int ErrorNumber { get; private set; }
+
+        /// <summary>
+        /// Gibt an ob die Nachricht eine Fehlermeldung enthält.
+        /// </summary>
         public bool HasError => ErrorNumber != 0;
 
+        /// <summary>
+        /// Eingangszeit der Nachricht.
+        /// </summary>
         public DateTime Timestamp { get; }
 
+        /// <summary>
+        /// Erstellt eine neue Instanz von <see cref="BasicMessage"/>
+        /// </summary>
+        /// <param name="message">Einzelne Zeilen der Nachricht</param>
+        /// <param name="errorNumber">Fehlernummer</param>
+        /// <param name="error">Fehlerbeschreibung</param>
         protected BasicMessage(string[] message, int errorNumber, string error)
         {
             Content = ExtractContentOfMessage(message);
@@ -22,6 +48,11 @@ namespace RailNet.Clients.Ecos.Basic
             Timestamp = DateTime.Now;
         }
 
+        /// <summary>
+        /// Extrahiert den Inhalt (Fehlermeldung) einer Nachricht und gibt die Nachricht ohne Header und Footer zurück.
+        /// </summary>
+        /// <param name="message">Einzelne Zeilen der Nachricht</param>
+        /// <returns>Nachricht ohne Header und Footer.</returns>
         internal string[] ExtractContentOfMessage(string[] message)
         {
             if (!message[0].StartsWith("<"))

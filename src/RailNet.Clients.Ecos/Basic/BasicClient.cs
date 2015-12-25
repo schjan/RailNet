@@ -5,11 +5,20 @@ using System.Threading.Tasks;
 
 namespace RailNet.Clients.Ecos.Basic
 {
+    /// <summary>
+    /// Client für standard ECoS Befehlssatz via TCP. Zum jetzigen Zeitpunkt werden alle Messagetypen unterstützt.
+    /// Die Funktionen sind am original Befehlssatz angelehnt und haben keine erweiterte Funktionalität.
+    /// Antworten werden ohne Auswertung (außer auf Fehler) an den Client weitergegeben.
+    /// </summary>
     public class BasicClient : IBasicClient
     {
         private readonly INachrichtenDispo _dispo;
 
-        public BasicClient(INachrichtenDispo dispo)
+        /// <summary>
+        /// Erstellt eine neue Instanz des <see cref="BasicClient"/>
+        /// </summary>
+        /// <param name="dispo"><see cref="NachrichtenDispo"/> Objekt</param>
+        internal BasicClient(INachrichtenDispo dispo)
         {
             _dispo = dispo;
             _dispo.IncomingEvents.Subscribe(RaiseEventReceived);

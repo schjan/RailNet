@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
-using NLog;
 using RailNet.Clients.Ecos.Network;
 
 namespace RailNet.Clients.Ecos.Basic
@@ -16,9 +15,8 @@ namespace RailNet.Clients.Ecos.Basic
     /// Der NachrichtenDispo ordnet gesendeten Befehlen die passenden Antworten zu. Im NachrichtenDispo
     /// findet das "awaiten" der Antwort auf Nachrichten statt.
     /// </summary>
-    public class NachrichtenDispo : INachrichtenDispo
+    internal class NachrichtenDispo : INachrichtenDispo
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly INetworkClient _networkClient;
 
         private readonly IObservable<BasicResponse> _incomingMessages;

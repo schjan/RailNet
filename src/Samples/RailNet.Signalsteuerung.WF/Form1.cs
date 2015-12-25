@@ -26,7 +26,7 @@ namespace RailNet.Signalsteuerung.WF
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            rc = new EcosClient();
+            rc = new EcosClient(new NLogLogger());
         }
 
         private async void RadioClick(object sender, EventArgs e)

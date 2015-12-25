@@ -7,7 +7,8 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using NLog;
+using RailNet.Core;
+using RailNet.Core.Logging;
 
 namespace RailNet.Clients.Ecos.Network
 {
@@ -21,9 +22,7 @@ namespace RailNet.Clients.Ecos.Network
         private Thread _sendThread;
         private volatile bool _shouldStop = false;
         private volatile ConcurrentBag<string> _messageList;
-
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
-
+        
         private int _messageDelay = 100;
 
         /// <summary>
@@ -109,7 +108,7 @@ namespace RailNet.Clients.Ecos.Network
             }
             catch (SocketException ex)
             {
-                logger.Error($"Could not connect to {host}:{port}", ex);
+                RailNetClientBase.Logger.Error($"Could not connect to {host}:{port}", ex);
                 return ex.SocketErrorCode;
             }
 
@@ -121,7 +120,7 @@ namespace RailNet.Clients.Ecos.Network
             _readerThread.Start();
             _sendThread.Start();
 
-            logger.Debug($"Connected to {host}:{port}");
+            RailNetClientBase.Logger.Debug($"Connected to {host}:{port}");
 
             return SocketError.Success;
         }
@@ -163,7 +162,7 @@ namespace RailNet.Clients.Ecos.Network
             await _tcpWriter.WriteLineAsync(text);
             await _tcpWriter.FlushAsync();
 
-            logger.Trace("Send: {0}", text);
+            RailNetClientBase.Logger.Trace($"Send: {text}");
         }
 
         private void CreateTcpClient()
@@ -184,7 +183,7 @@ namespace RailNet.Clients.Ecos.Network
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex);
+                        RailNetClientBase.Logger.Error("Listening exception", ex);
                     }
                 }
             });
@@ -213,7 +212,7 @@ namespace RailNet.Clients.Ecos.Network
                     }
                     else
                     {
-                        logger.Error("Konnte keine Nachricht zum Versenden aus ConcurrentBag holen!");
+                        RailNetClientBase.Logger.Error("Konnte keine Nachricht zum Versenden aus ConcurrentBag holen!");
                     }
                 }
             });
