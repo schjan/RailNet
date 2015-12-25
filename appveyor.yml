@@ -1,10 +1,23 @@
 init:
   - git config --global core.autocrlf input
-build_script:
-  - cmd: build.cmd createpackage
-test: off
+
+assembly_info:
+  patch: false
+
+install:
+  - cmd: nuget restore src\RailNet.sln
+  - cmd: nuget install GitVersion.CommandLine -OutputDirectory tools -Version 3.3.0
+
+before_build:
+  - ps: .\tools\NuGetCommandLine\tools\GitVersion.exe /l console /output buildserver /updateAssemblyInfo
+
+build:
+  parallel: true
+  verbosity: quiet
+
 artifacts:
   - path: deploy\*.nupkg
+  
 cache:
   - src\packages -> **\packages.config
-  - tools -> build.cmd
+  - tools\
