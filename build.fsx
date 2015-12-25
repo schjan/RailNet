@@ -73,10 +73,9 @@ Target "SetVersions" (fun _ ->
         if isAppVeyorBuild then
             let res = ExecProcess(fun proc -> proc.FileName <- "appveyor"
                                               proc.Arguments <- "UpdateBuild -Version \"" + semVer + "\"")
-                                    (System.TimeSpan.FromMinutes 2.0)
-            if res <> 0 then failwithf "Error during sending things to AppVeyor"
+                                    (System.TimeSpan.FromMinutes 0.1)
+            if res <> 0 then traceFAKE  "Error during sending things to AppVeyor"
 
-        else
         version <- environVarOrDefault "BUILD_NUMBER" ""
         nugetVersion <- environVarOrDefault "semver.nuget" ""
 
@@ -88,6 +87,7 @@ Target "SetVersions" (fun _ ->
             Attribute.Version assemblyVersion
             Attribute.FileVersion assemblyFileVersion
             Attribute.InformationalVersion assemblyInformationalVersion
+            Attribute.InternalsVisibleTo "RailNet.Clients.Ecos.Tests"
             Attribute.Guid "17abf373-a1b5-41d4-8859-89e2b279a0b5"]
 
         CreateCSharpAssemblyInfo "./src/RailNet.Core/Properties/AssemblyInfo.cs"
@@ -97,6 +97,7 @@ Target "SetVersions" (fun _ ->
             Attribute.Version assemblyVersion
             Attribute.FileVersion assemblyFileVersion
             Attribute.InformationalVersion assemblyInformationalVersion
+            Attribute.InternalsVisibleTo "RailNet.Clients.Ecos"
             Attribute.Guid "48353882-6320-403e-8c2e-820288731ad0"]
 )
 
