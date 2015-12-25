@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace RailNet.Clients.Ecos.Basic
 {
-    internal interface INachrichtenDispo
+    public interface INachrichtenDispo
     {
         /// <summary>
         /// Von ausserhalb Aufgerufene Methode zum senden einer Nachricht.
